@@ -1,0 +1,2969 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>교행 연구소</title>
+            <!-- SheetJS 라이브러리 -->
+             <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Apple Style Colors */
+            --apple-blue: #007aff;
+            --apple-gray: #f5f5f7;
+            --apple-dark: #1d1d1f;
+            --apple-border: #d2d2d7;
+            --card-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+            --card-hover-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            
+            /* Google Style Colors */
+            --google-blue: #1a73e8;
+            --google-blue-hover: #1765cc;
+            --google-blue-light: #e8f0fe;
+            --google-red: #d93025;
+            --google-green: #1e8e3e;
+            --google-gray-50: #f8f9fa;
+            --google-gray-100: #f1f3f4;
+            --google-gray-200: #e8eaed;
+            --google-gray-300: #dadce0;
+            --google-gray-500: #9aa0a6;
+            --google-gray-700: #5f6368;
+            --google-gray-900: #202124;
+            --border-radius: 8px;
+            --shadow-1: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+            --shadow-2: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
+        }
+
+        body {
+            font-family: 'SF Pro Display', 'Roboto', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--apple-gray);
+            color: var(--apple-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 페이지 전환 */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* 메인 페이지 스타일 */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .main-header {
+            margin-bottom: 60px;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--apple-dark);
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .main-subtitle {
+            font-size: 21px;
+            color: #86868b;
+            font-weight: 400;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--apple-dark);
+            margin-bottom: 30px;
+            letter-spacing: -0.5px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--card-hover-shadow);
+            border-color: var(--apple-blue);
+        }
+
+        .tool-card:active {
+            transform: translateY(-2px);
+        }
+
+        .tool-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .tool-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--apple-dark);
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+            white-space:nowrap;
+        }
+
+        .tool-description {
+            font-size: 15px;
+            color: #86868b;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .tool-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .meta-tag {
+            font-size: 13px;
+            color: var(--apple-blue);
+            background: rgba(0, 122, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 18px;
+            padding: 32px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .info-section h2 {
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--apple-dark);
+            margin-bottom: 16px;
+        }
+
+        .info-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-section li {
+            padding: 12px 0;
+            color: #86868b;
+            font-size: 15px;
+            border-bottom: 1px solid #f5f5f7;
+        }
+
+        .info-section li:last-child {
+            border-bottom: none;
+        }
+
+        .info-section li::before {
+            content: '✓';
+            color: var(--apple-blue);
+            font-weight: bold;
+            margin-right: 12px;
+        }
+
+        .main-footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #86868b;
+            font-size: 14px;
+        }
+
+        /* 계산기 페이지 스타일 (Google Style) */
+        .calc-page {
+            background: var(--google-gray-50);
+        }
+
+        .calc-header {
+            background: white;
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--google-gray-200);
+            box-shadow: var(--shadow-1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--google-blue);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .back-btn:hover {
+            background: var(--google-blue-light);
+        }
+
+        .calc-title-main {
+            font-size: 28px;
+            font-weight: 400;
+            color: var(--google-gray-900);
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .calc-subtitle {
+            font-size: 14px;
+            color: var(--google-gray-700);
+            font-weight: 400;
+        }
+
+        .calc-container {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 20px;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .calc-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow-1);
+            border: 1px solid var(--google-gray-200);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .calc-card:hover {
+            box-shadow: var(--shadow-2);
+        }
+
+        .calc-card-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--google-gray-900);
+            font-weight: 500;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--google-gray-200);
+            letter-spacing: -0.3px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--google-gray-700);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .input-group .helper-text {
+            font-size: 12px;
+            color: var(--google-gray-500);
+            margin-top: 6px;
+        }
+
+        input[type="number"],
+        input[type="date"],
+        input[type="time"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            background: white;
+            border: 1px solid var(--google-gray-300);
+            border-radius: var(--border-radius);
+            color: var(--google-gray-900);
+            font-size: 14px;
+            font-family: 'Roboto', 'Noto Sans KR', Arial, sans-serif;
+            transition: all 0.15s ease;
+        }
+
+        input[type="number"]:hover,
+        input[type="date"]:hover,
+        input[type="time"]:hover,
+        select:hover {
+            border-color: var(--google-gray-500);
+        }
+
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        input[type="time"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--google-blue);
+            box-shadow: 0 0 0 2px var(--google-blue-light);
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 12px 24px;
+            background: var(--google-blue);
+            border: none;
+            border-radius: var(--border-radius);
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Roboto', 'Noto Sans KR', Arial, sans-serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+            letter-spacing: 0.25px;
+        }
+
+        .calc-btn:hover {
+            background: var(--google-blue-hover);
+            box-shadow: var(--shadow-1);
+        }
+
+        .calc-btn:active {
+            transform: scale(0.98);
+        }
+
+        .result-box {
+            margin-top: 24px;
+            padding: 20px;
+            background: var(--google-gray-50);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--google-gray-200);
+        }
+
+        .result-title {
+            font-size: 12px;
+            color: var(--google-gray-700);
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-value {
+            font-size: 32px;
+            color: var(--google-blue);
+            font-weight: 400;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .result-detail {
+            font-size: 14px;
+            color: var(--google-gray-900);
+            line-height: 1.6;
+        }
+
+        .result-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--google-gray-200);
+        }
+
+        .result-detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-detail-label {
+            color: var(--google-gray-700);
+            font-size: 14px;
+        }
+
+        .result-detail-value {
+            font-weight: 500;
+            color: var(--google-gray-900);
+            text-align: right;
+        }
+
+        .info-box {
+            background: var(--google-blue-light);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+            border-left: 4px solid var(--google-blue);
+        }
+
+        .info-box .info-title {
+            font-weight: 500;
+            color: var(--google-gray-900);
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-box li {
+            padding: 6px 0;
+            color: var(--google-gray-700);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .info-box li::before {
+            content: '•';
+            color: var(--google-blue);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 36px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .calc-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .calc-card-title {
+                font-size: 18px;
+            }
+
+            .result-value {
+                font-size: 28px;
+            }
+        }
+
+        strong {
+            font-weight: 500;
+            color: var(--google-gray-900);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tool-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* 보수계산기 탭 네비게이션 */
+        .bosu-tab-nav {
+            display: flex;
+            gap: 8px;
+            padding: 16px 20px;
+            background: white;
+            border-bottom: 1px solid var(--google-gray-200);
+            overflow-x: auto;
+            flex-wrap: wrap;
+        }
+        .bosu-tab-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--google-gray-300);
+            background: white;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            color: var(--google-gray-700);
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .bosu-tab-btn:hover {
+            background: var(--google-blue-light);
+            border-color: var(--google-blue);
+            color: var(--google-blue);
+        }
+        .bosu-tab-btn.active {
+            background: var(--google-blue);
+            border-color: var(--google-blue);
+            color: white;
+        }
+        .bosu-tab-content {
+            display: none;
+            padding: 0;
+        }
+        .bosu-tab-content.active {
+            display: block;
+        }
+        .bosu-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .bosu-table th {
+            background: var(--google-gray-100);
+            padding: 10px 12px;
+            text-align: center;
+            color: var(--google-gray-700);
+            font-weight: 500;
+            border: 1px solid var(--google-gray-200);
+            white-space: nowrap;
+        }
+        .bosu-table td {
+            padding: 8px 10px;
+            border: 1px solid var(--google-gray-200);
+            color: var(--google-gray-900);
+        }
+        .bosu-table tr:hover td {
+            background: var(--google-gray-50);
+        }
+        .bosu-table input[type=number], .bosu-table input[type=text], .bosu-table input[type=date], .bosu-table select {
+            width: 100%;
+            border: 1px solid var(--google-gray-300);
+            border-radius: 4px;
+            padding: 4px 6px;
+            font-size: 13px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        .bosu-table input[type=number]:focus, .bosu-table input[type=text]:focus, .bosu-table select:focus {
+            outline: none;
+            border-color: var(--google-blue);
+        }
+        .bosu-result-row td {
+            background: var(--google-blue-light);
+            font-weight: 600;
+            color: var(--google-blue);
+        }
+        .small-btn {
+            padding: 4px 10px;
+            font-size: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-delete { background: #fce8e6; color: var(--google-red); }
+        .btn-add-row { padding: 8px 20px; background: var(--google-gray-100); border: 1px solid var(--google-gray-300); border-radius: 6px; font-size: 13px; cursor: pointer; font-family: inherit; margin-top: 8px; }
+        .btn-auto-fill { padding: 6px 14px; background: var(--google-blue-light); border: 1px solid var(--google-blue); border-radius: 6px; font-size: 12px; color: var(--google-blue); cursor: pointer; font-family: inherit; }
+        .명세서-section { background: white; border: 1px solid var(--google-gray-200); border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+        .명세서-section-title { background: var(--google-gray-100); padding: 10px 16px; font-weight: 600; font-size: 14px; color: var(--google-gray-700); border-bottom: 1px solid var(--google-gray-200); }
+        .명세서-row { display: grid; grid-template-columns: 160px 1fr 160px 1fr; gap: 0; border-bottom: 1px solid var(--google-gray-200); }
+        .명세서-row:last-child { border-bottom: none; }
+        .명세서-label { padding: 8px 12px; background: var(--google-gray-50); font-size: 13px; color: var(--google-gray-700); font-weight: 500; border-right: 1px solid var(--google-gray-200); display: flex; align-items: center; }
+        .명세서-value { padding: 6px 10px; font-size: 13px; display: flex; align-items: center; }
+        .명세서-value input, .명세서-value select { width: 100%; border: 1px solid var(--google-gray-300); border-radius: 4px; padding: 4px 8px; font-size: 13px; font-family: inherit; }
+        .명세서-value input:focus, .명세서-value select:focus { outline: none; border-color: var(--google-blue); }
+        @media (max-width: 700px) {
+            .bosu-tab-nav { gap: 6px; padding: 12px; }
+            .bosu-tab-btn { font-size: 12px; padding: 6px 12px; }
+            .명세서-row { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 메인 페이지 -->
+    <div id="mainPage" class="page active">
+        <div class="main-container">
+            <header class="main-header">
+                <h1 class="main-title">교행 연구소</h1>
+                <p class="main-subtitle">일상 업무를 더 쉽고 빠르게</p>
+            </header>
+
+            <section>
+                <h2 class="section-title">1. 업무 지원
+                </h2>
+                <div class="tools-grid">
+                    <div class="tool-card" onclick="showCalculator()">
+                        <div class="tool-icon">💰</div>
+                        <h3 class="tool-title">일용근로 소득 및 연장근로 계산기</h3>
+                        <p class="tool-description">일용근로자의 소득세, 4대보험, 연장근로 수당을 정확하게 계산합니다.</p>
+                        <div class="tool-meta">
+                            <span class="meta-tag">소득세 계산</span>
+                            <span class="meta-tag">고용보험</span>
+                            <span class="meta-tag">연장근로비</span>
+                    </div>
+                    </div>
+                    <div class="tool-card" onclick="showVacationCalculator()">
+                        <div class="tool-icon">📅</div>
+                        <h3 class="tool-title">공무직 방학중 비근무 일수 계산기</h3>
+                        <p class="tool-description">근무상황목록 파일을 업로드하여 직원별 방학중 비근무 일수를 자동으로 계산합니다.</p>
+                        <div class="tool-meta">
+                        </div>
+                    </div>
+                    <div class="tool-card" onclick="showBosuCalculator()">
+                        <div class="tool-icon">💼</div>
+                        <h3 class="tool-title">공무직 보수 계산기</h3>
+                        <p class="tool-description">통상임금 계산, 초과근무수당, 급여 지급내역, 임금명세서를 통합 관리합니다.</p>
+                        <div class="tool-meta">
+                            <span class="meta-tag">통상임금</span>
+                            <span class="meta-tag">초과근무</span>
+                            <span class="meta-tag">임금명세서</span>
+                        </div>
+                    </div>
+
+            </section>
+
+            <section class="info-section">
+                <h2>주요 기능</h2>
+                <ul>
+                    <li>일용근로자 급여 계산 (소득세, 지방소득세, 고용보험 자동 계산)</li>
+                    <li>직종별 연장근로 시간 및 수당 계산 (학교 근무자, 8시간, 5시간)</li>
+                    <li>야간근로 수당 자동 계산 (22:00~06:00)</li>
+                    <li>보수지급 기초일수 기반 총 급여 산출</li>
+                </ul>
+            </section>
+
+            <footer class="main-footer">
+                <p>© 2025 교행 연구소. All rights reserved.</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- 계산기 페이지 -->
+    <div id="calculatorPage" class="page calc-page">
+        <div class="calc-header">
+            <button class="back-btn" onclick="showMain()">← 뒤로가기</button>
+            <h1 class="calc-title-main">일용근로 계산기</h1>
+            <p class="calc-subtitle">소득세, 보험료, 근무시간 계산</p>
+        </div>
+
+        <div class="calc-container">
+            <div class="calc-grid">
+                <!-- 1. 일용근로 급여 계산기 -->
+                <div class="calc-card full-width">
+                    <h2 class="calc-card-title">일용근로 급여 계산기</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div class="input-group">
+                            <label>일당 (원)</label>
+                            <input type="number" id="dailyWage" placeholder="예: 150000" value="">
+                            <p class="helper-text">하루 기준 급여</p>
+                        </div>
+                        <div class="input-group">
+                            <label>보수지급 기초일수 (일)</label>
+                            <input type="number" id="workDays" placeholder="예: 20" value="" min="1">
+                            <p class="helper-text">근무한 총 일수</p>
+                        </div>
+                        <div class="input-group">
+                            <label>업종 (산재보험율)</label>
+                            <select id="industryType">
+                                <option value="0.007">일반업종 (0.7%)</option>
+                                <option value="0.014">건설업 (1.4%)</option>
+                                <option value="0.021">위험업종 (2.1%)</option>
+                            </select>
+                            <p class="helper-text">사업주 부담</p>
+                        </div>
+                    </div>
+                    <button class="calc-btn" onclick="calculateAll()">계산하기</button>
+                    
+                    <div id="allResult" class="result-box" style="display: none;">
+                        <div class="result-title">최종 실수령액</div>
+                        <div class="result-value" id="finalNetPay">-</div>
+                        <div class="result-detail" id="allDetail"></div>
+                    </div>
+
+                    <div class="info-box">
+                        <div class="info-title">공제 항목 안내 (2024년 기준)</div>
+                        <ul>
+                            <li><strong>소득세:</strong> 일 15만원 초과분에 대해 6% 부과</li>
+                            <li><strong>지방소득세:</strong> 소득세의 10%</li>
+                            <li><strong>고용보험:</strong> 일당의 0.9% (근로자 부담)</li>
+                            <li><strong>산재보험:</strong> 사업주 전액 부담 (근로자 공제 없음)</li>
+                            <li><strong>건강보험/국민연금:</strong> 일용직은 제외</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 2. 연장근로 시간 계산기 -->
+                <div class="calc-card">
+                    <h2 class="calc-card-title">연장근로 시간 계산기</h2>
+                    <div style="display: grid; gap: 15px;">
+                        <div class="input-group">
+                            <label>날짜</label>
+                            <input type="date" id="workDate1" value="">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="input-group">
+                                <label>시작 시간</label>
+                                <input type="time" id="startTime1" value="">
+                            </div>
+                            <div class="input-group">
+                                <label>종료 시간</label>
+                                <input type="time" id="endTime1" value="">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>휴게 시간 (분)</label>
+                            <input type="number" id="breakTime1" placeholder="예: 60" value="60">
+                        </div>
+                    </div>
+                    <button class="calc-btn" onclick="calculateBasicWorkHours()">계산하기</button>
+                    
+                    <div id="timeResult1" class="result-box" style="display: none;">
+                        <div class="result-title">총 근무시간</div>
+                        <div class="result-value" id="totalHours1">-</div>
+                        <div class="result-detail" id="timeDetail1"></div>
+                    </div>
+                </div>
+
+                <!-- 3. 연장근로비 계산기 -->
+                <div class="calc-card">
+                    <h2 class="calc-card-title">연장근로비 계산기</h2>
+                    <div style="display: grid; gap: 15px;">
+                        <div class="input-group">
+                            <label>직종</label>
+                            <select id="jobType">
+                                <option value="7.5">학교 근무자 (7시간 30분)</option>
+                                <option value="8">8시간 근무자</option>
+                                <option value="5">5시간 근무자</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>통상시급 (원)</label>
+                            <input type="number" id="hourlyRate" placeholder="예: 10000" value="">
+                        </div>
+                        <div class="input-group">
+                            <label>날짜</label>
+                            <input type="date" id="workDate2" value="">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="input-group">
+                                <label>시작 시간</label>
+                                <input type="time" id="startTime2" value="">
+                            </div>
+                            <div class="input-group">
+                                <label>종료 시간</label>
+                                <input type="time" id="endTime2" value="">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>휴게 시간 (분)</label>
+                            <input type="number" id="breakTime2" placeholder="예: 60" value="60">
+                        </div>
+                    </div>
+                    <button class="calc-btn" onclick="calculateSalaryByJob()">계산하기</button>
+                    
+                    <div id="salaryResult" class="result-box" style="display: none;">
+                        <div class="result-title">총 급여</div>
+                        <div class="result-value" id="totalSalary">-</div>
+                        <div class="result-detail" id="salaryDetail"></div>
+                    </div>
+
+                    <div class="info-box">
+                        <div class="info-title">학교 근무자 (7.5시간) 특별 규정</div>
+                        <ul>
+                            <li><strong>기준 근무:</strong> 08:30-16:30 (휴게 30분)</li>
+                            <li><strong>출근 전:</strong> 08:00 이전 150%, 08:00-08:30 100%</li>
+                            <li><strong>퇴근 후:</strong> 16:30-17:00 무급, 17:00-17:30 100%, 17:30 이후 150%</li>
+                            <li><strong>야간:</strong> 22:00-06:00 200% (연장150%+야간50%)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 방학중 비근무 일수 계산기 페이지 -->
+    <div id="vacationCalculatorPage" class="page calc-page">
+        <div class="calc-header">
+            <button class="back-btn" onclick="showMain()">← 돌아가기</button>
+            <h1 class="calc-title-main">공무직 근무 관리 계산기</h1>
+            <p class="calc-subtitle">방학중 비근무 일수 및 연차 사용일수를 계산합니다</p>
+        </div>
+
+        <div class="calc-container">
+            <div class="calc-grid">
+                <!-- 1. 방학중 비근무일 계산기 -->
+                <div class="calc-card">
+                    <h2 class="calc-card-title">1️⃣ 방학중 비근무일 계산기</h2>
+                    
+                    <div class="input-group">
+                        <label>근무상황목록 파일 선택</label>
+                        <input type="file" id="vacationFile" accept=".xlsx,.xls,.csv" multiple
+                               style="padding: 10px; border: 2px dashed var(--google-gray-300); background: var(--google-gray-50); border-radius: var(--border-radius);">
+                        <p class="helper-text">여러 파일 선택 가능 (Ctrl+클릭)</p>
+                    </div>
+
+                    <button class="calc-btn" onclick="processVacationFile()">📊 계산하기</button>
+
+                    <div id="vacationProcessing" style="display: none; margin-top: 20px; padding: 16px; background: var(--google-blue-light); border-radius: var(--border-radius); text-align: center;">
+                        <div style="font-size: 14px; color: var(--google-blue); font-weight: 500;">파일 처리 중...</div>
+                    </div>
+                </div>
+
+                <!-- 2. 연차 사용일수 계산기 -->
+                <div class="calc-card">
+                    <h2 class="calc-card-title">2️⃣ 연차 사용일수 계산기</h2>
+                    
+                    <div class="input-group">
+                        <label>근무상황목록 파일 선택</label>
+                        <input type="file" id="annualFile" accept=".xlsx,.xls,.csv" multiple
+                               style="padding: 10px; border: 2px dashed var(--google-gray-300); background: var(--google-gray-50); border-radius: var(--border-radius);">
+                        <p class="helper-text">여러 파일 선택 가능 (Ctrl+클릭)</p>
+                    </div>
+
+                    <button class="calc-btn" onclick="processAnnualFile()">📊 계산하기</button>
+
+                    <div id="annualProcessing" style="display: none; margin-top: 20px; padding: 16px; background: var(--google-blue-light); border-radius: var(--border-radius); text-align: center;">
+                        <div style="font-size: 14px; color: var(--google-blue); font-weight: 500;">파일 처리 중...</div>
+                    </div>
+                </div>
+
+                <!-- 방학중 비근무일 결과 카드 -->
+                <div id="vacationResultCard" class="calc-card full-width" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 class="calc-card-title" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;">📋 방학중 비근무일 결과</h2>
+                        <button onclick="resetVacationCalculator()" style="padding: 8px 16px; background: var(--google-gray-500); border: none; border-radius: var(--border-radius); color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+                            🔄 초기화
+                        </button>
+                    </div>
+                    
+                    <div id="vacationSummary" style="margin-bottom: 20px; padding: 16px; background: var(--google-blue-light); border-radius: var(--border-radius);">
+                        <div style="font-size: 14px; color: var(--google-gray-700); margin-bottom: 8px;">처리 완료</div>
+                        <div style="font-size: 24px; color: var(--google-blue); font-weight: 500;">
+                            총 <span id="vacationTotalCount">0</span>명 처리
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table id="vacationResultTable" style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                            <thead>
+                                <tr style="background: var(--google-gray-50); border-bottom: 2px solid var(--google-gray-300);">
+                                    <th style="padding: 12px; text-align: left; color: var(--google-gray-700); font-weight: 500;">이름</th>
+                                    <th style="padding: 12px; text-align: left; color: var(--google-gray-700); font-weight: 500;">직종</th>
+                                    <th style="padding: 12px; text-align: right; color: var(--google-gray-700); font-weight: 500;">총 일수</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vacationTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="vacationErrors" style="display: none; margin-top: 20px; padding: 16px; background: #fce8e6; border-radius: var(--border-radius); border-left: 4px solid var(--google-red);">
+                        <div style="font-weight: 500; color: var(--google-red); margin-bottom: 8px;">⚠️ 처리 중 오류 발생</div>
+                        <div id="vacationErrorList" style="font-size: 13px; color: var(--google-gray-700);"></div>
+                    </div>
+                </div>
+
+                <!-- 연차 사용일수 결과 카드 -->
+                <div id="annualResultCard" class="calc-card full-width" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 class="calc-card-title" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;">📋 연차 사용일수 결과</h2>
+                        <button onclick="resetAnnualCalculator()" style="padding: 8px 16px; background: var(--google-gray-500); border: none; border-radius: var(--border-radius); color: white; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+                            🔄 초기화
+                        </button>
+                    </div>
+                    
+                    <div id="annualSummary" style="margin-bottom: 20px; padding: 16px; background: var(--google-blue-light); border-radius: var(--border-radius);">
+                        <div style="font-size: 14px; color: var(--google-gray-700); margin-bottom: 8px;">처리 완료</div>
+                        <div style="font-size: 24px; color: var(--google-blue); font-weight: 500;">
+                            총 <span id="annualTotalCount">0</span>명 처리
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table id="annualResultTable" style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                            <thead>
+                                <tr style="background: var(--google-gray-50); border-bottom: 2px solid var(--google-gray-300);">
+                                    <th style="padding: 12px; text-align: left; color: var(--google-gray-700); font-weight: 500;">이름</th>
+                                    <th style="padding: 12px; text-align: left; color: var(--google-gray-700); font-weight: 500;">직종</th>
+                                    <th style="padding: 12px; text-align: right; color: var(--google-gray-700); font-weight: 500;">사용일수</th>
+                                </tr>
+                            </thead>
+                            <tbody id="annualTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="annualErrors" style="display: none; margin-top: 20px; padding: 16px; background: #fce8e6; border-radius: var(--border-radius); border-left: 4px solid var(--google-red);">
+                        <div style="font-weight: 500; color: var(--google-red); margin-bottom: 8px;">⚠️ 처리 중 오류 발생</div>
+                        <div id="annualErrorList" style="font-size: 13px; color: var(--google-gray-700);"></div>
+                    </div>
+                </div>
+
+                <!-- 사용 방법 -->
+                <div class="info-box" style="grid-column: 1 / -1;">
+                    <div class="info-title">📌 사용 방법</div>
+                    <ul>
+                        <li><strong>공통:</strong> C열(이름), D열(직종), F열(기간) 데이터가 필요합니다</li>
+                        <li><strong>다중 파일:</strong> 두 계산기 모두 여러 파일 동시 선택 가능 (Ctrl+클릭)</li>
+                        <li><strong>방학중 비근무일:</strong> 환경실무원/초등돌봄전담사는 5.5시간 = 1일</li>
+                        <li><strong>연차 사용일수:</strong> 환경실무원/초등돌봄전담사는 5시간 = 1일</li>
+                        <li><strong>자동 병합:</strong> 같은 이름의 데이터는 자동으로 합산됩니다</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 공무직 보수 계산기 페이지 -->
+    <div id="bosuCalculatorPage" class="page calc-page">
+        <div class="calc-header">
+            <button class="back-btn" onclick="showMain()">← 뒤로가기</button>
+            <h1 class="calc-title-main">공무직 보수 계산기</h1>
+            <p class="calc-subtitle">신분변동 · 통상임금 · 초과근무 · 급여내역 · 임금명세서 통합 관리</p>
+        </div>
+
+        <div class="bosu-tab-nav">
+            <button class="bosu-tab-btn active" onclick="showBosuTab(0)">① 신분변동일</button>
+            <button class="bosu-tab-btn" onclick="showBosuTab(1)">② 통상임금 계산기</button>
+            <button class="bosu-tab-btn" onclick="showBosuTab(2)">③ 초과근무(일별)</button>
+            <button class="bosu-tab-btn" onclick="showBosuTab(3)">④ 초과근무(월별)</button>
+            <button class="bosu-tab-btn" onclick="showBosuTab(4)">⑤ 급여 지급 내역</button>
+            <button class="bosu-tab-btn" onclick="showBosuTab(5)">⑥ 임금명세서(공무직)</button>
+            <button class="bosu-tab-btn" onclick="showBosuTab(6)">⑦ 임금명세서(유치원)</button>
+        </div>
+
+        <div class="calc-container">
+
+            <!-- ① 신분변동일 탭 -->
+            <div class="bosu-tab-content active" id="bosuTab0">
+                <div class="calc-card full-width">
+                    <h2 class="calc-card-title">신분변동일 관리</h2>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px;">
+                        <div class="input-group">
+                            <label>성명</label>
+                            <input type="text" id="shin_name" placeholder="홍길동">
+                        </div>
+                        <div class="input-group">
+                            <label>소속</label>
+                            <input type="text" id="shin_school" placeholder="00초등학교">
+                        </div>
+                        <div class="input-group">
+                            <label>NEIS개인번호</label>
+                            <input type="text" id="shin_neis" placeholder="N100000000">
+                        </div>
+                        <div class="input-group">
+                            <label>생년월일</label>
+                            <input type="date" id="shin_birth">
+                        </div>
+                        <div class="input-group">
+                            <label>직종</label>
+                            <select id="shin_job">
+                                <option value="">선택</option>
+                                <option>영양사</option><option>전문상담사</option><option>운동부지도자</option>
+                                <option>임상심리사</option><option>교무행정실무원</option><option>교무행정사</option>
+                                <option>과학실험실무원</option><option>전산실무원</option><option>특수실무원</option>
+                                <option>조리사</option><option>조리실무사</option><option>행정실무원(월급제)</option>
+                                <option>시설관리원</option><option>초등돌봄전담사</option><option>환경실무원</option>
+                                <option>초등스포츠강사</option><option>영어회화전문강사</option><option>교육복지사</option>
+                                <option>유치원(4시간)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>근로자유형</label>
+                            <select id="shin_type">
+                                <option>원근로자</option><option>기간제근로자</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>근무형태</label>
+                            <select id="shin_work">
+                                <option>상시</option><option>방중비</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>신분상태</label>
+                            <select id="shin_status">
+                                <option>재직</option><option>퇴직</option><option>휴직</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>최초계약일</label>
+                            <input type="date" id="shin_contract">
+                        </div>
+                        <div class="input-group" style="grid-column:span 2;">
+                            <label>신분변동 상세내역</label>
+                            <input type="text" id="shin_detail" placeholder="예: 2025.10.15 퇴직">
+                        </div>
+                    </div>
+                    <button class="calc-btn" onclick="addShinEmployee()" style="max-width:160px;">직원 추가</button>
+                    <div style="overflow-x:auto;margin-top:20px;">
+                        <table class="bosu-table" id="shinTable">
+                            <thead>
+                                <tr>
+                                    <th>순</th><th>성명</th><th>소속</th><th>NEIS번호</th><th>생년월일</th>
+                                    <th>만65세</th><th>직종</th><th>근로자유형</th><th>근무형태</th>
+                                    <th>신분상태</th><th>최초계약일</th><th>변동내역</th><th>삭제</th>
+                                </tr>
+                            </thead>
+                            <tbody id="shinTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="info-box" style="margin-top:16px;">
+                        <div class="info-title">💾 자동 저장</div>
+                        <ul><li>입력 데이터는 브라우저에 자동 저장되며, 탭② 통상임금 계산기에서 직원을 선택할 수 있습니다.</li></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ② 통상임금 계산기 탭 -->
+            <div class="bosu-tab-content" id="bosuTab1">
+                <div class="calc-card full-width">
+                    <h2 class="calc-card-title">통상시급 계산기</h2>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px;">
+                        <div class="input-group">
+                            <label>직종 선택 (자동완성)</label>
+                            <select id="tong_job" onchange="autoFillTongJob()">
+                                <option value="">직종 선택</option>
+                                <option>영양사</option><option>전문상담사</option><option>운동부지도자</option>
+                                <option>임상심리사</option><option>교무행정실무원</option><option>교무행정사</option>
+                                <option>과학실험실무원</option><option>전산실무원</option><option>특수실무원</option>
+                                <option>조리사</option><option>조리실무사</option><option>행정실무원(월급제)</option>
+                                <option>시설관리원</option><option>초등돌봄전담사</option><option>환경실무원</option>
+                                <option>초등스포츠강사</option><option>영어회화전문강사</option><option>교육복지사</option>
+                                <option>유치원(4시간)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>성명</label>
+                            <input type="text" id="tong_name" placeholder="홍길동">
+                        </div>
+                        <div class="input-group">
+                            <label>근속수당 산정연수</label>
+                            <input type="number" id="tong_years" value="0" min="0" max="30">
+                        </div>
+                        <div class="input-group">
+                            <label>명휴비/정기상여금 대상</label>
+                            <select id="tong_bonus_yn">
+                                <option value="yes">예</option><option value="no">아니오</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>2,3식 학교(조리직)</label>
+                            <select id="tong_school_type">
+                                <option value="no">아니오</option><option value="yes">예</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;margin-bottom:16px;">
+                        <table class="bosu-table">
+                            <thead>
+                                <tr>
+                                    <th>기본급</th><th>정액급식비</th><th>근속수당</th><th>위험수당</th><th>면허수당</th>
+                                    <th>위생수당</th><th>특수업무수당</th><th>특별근무수당</th><th>연수비</th><th>순회수당</th>
+                                    <th>명휴비</th><th>정기상여금</th><th>월소정근로시간</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="number" id="tong_basic" value="0" oninput="calcTongImgeum()"></td>
+                                    <td><input type="number" id="tong_meal" value="0" oninput="calcTongImgeum()"></td>
+                                    <td><input type="number" id="tong_tenure" value="0" oninput="calcTongImgeum()"></td>
+                                    <td><input type="number" id="tong_risk" value="0" oninput="calcTongImgeum()"></td>
+                                    <td><input type="number" id="tong_license" value="0" oninput="calcTongImgeum()"></td>
+                                    <td><input type="number" id="tong_hygiene" value="0" oninput="calcTongImgeum()"></td>
+                                    <td><input type="number" id="tong_special1" value="0" oninput="calcTongImgeum()"></td>
+                                    <td><input type="number" id="tong_special2" value="0" oninput="calcTongImgeum()"></td>
+                                    <td><input type="number" id="tong_training" value="0" oninput="calcTongImgeum()"></td>
+                                    <td><input type="number" id="tong_travel" value="0" oninput="calcTongImgeum()"></td>
+                                    <td><input type="number" id="tong_holiday" value="0" oninput="calcTongImgeum()"></td>
+                                    <td><input type="number" id="tong_bonus" value="0" oninput="calcTongImgeum()"></td>
+                                    <td><input type="number" id="tong_hours" value="209" oninput="calcTongImgeum()"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="calc-btn" onclick="calcTongImgeum()" style="max-width:160px;">계산하기</button>
+                    <div id="tongResult" class="result-box" style="display:none;margin-top:16px;">
+                        <div class="result-title">통상시급</div>
+                        <div class="result-value" id="tongHourlyRate">-</div>
+                        <div class="result-detail" id="tongDetail"></div>
+                    </div>
+                </div>
+                <div class="calc-card full-width">
+                    <h2 class="calc-card-title">저장된 통상시급 목록</h2>
+                    <div style="overflow-x:auto;">
+                        <table class="bosu-table" id="tongSavedTable">
+                            <thead>
+                                <tr><th>직종</th><th>성명</th><th>기본급</th><th>월급여액</th><th>통상시급</th><th>저장</th><th>삭제</th></tr>
+                            </thead>
+                            <tbody id="tongSavedBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ③ 초과근무 일별집계 탭 -->
+            <div class="bosu-tab-content" id="bosuTab2">
+                <div class="calc-card full-width">
+                    <h2 class="calc-card-title">초과근무 일별집계 계산기</h2>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px;">
+                        <div class="input-group">
+                            <label>해당 월</label>
+                            <input type="month" id="daily_month">
+                        </div>
+                        <div class="input-group">
+                            <label>이름</label>
+                            <input type="text" id="daily_name" placeholder="직원 이름 입력">
+                        </div>
+                        <div class="input-group">
+                            <label>통상시급 (원)</label>
+                            <input type="number" id="daily_rate" placeholder="예: 12970" oninput="calcDailyOT()">
+                        </div>
+                        <div class="input-group">
+                            <label style="visibility:hidden">-</label>
+                            <button class="btn-auto-fill" onclick="loadTongRate('daily_name','daily_rate')">통상시급 불러오기</button>
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="bosu-table" id="dailyOTTable">
+                            <thead>
+                                <tr>
+                                    <th>일자</th>
+                                    <th>연장100%<br>시간</th><th>연장100%<br>분</th>
+                                    <th>연장150%<br>시간</th><th>연장150%<br>분</th>
+                                    <th>야간50%<br>시간</th><th>야간50%<br>분</th>
+                                    <th>소계(원)</th><th>삭제</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dailyOTBody"></tbody>
+                        </table>
+                    </div>
+                    <button class="btn-add-row" onclick="addDailyRow()">+ 행 추가</button>
+                    <div class="result-box" id="dailyOTResult" style="display:none;margin-top:16px;">
+                        <div class="result-title">초과근무 수당 합계</div>
+                        <div class="result-value" id="dailyOTTotal">-</div>
+                        <div class="result-detail" id="dailyOTDetail"></div>
+                    </div>
+                    <button class="calc-btn" onclick="calcDailyOT()" style="max-width:160px;margin-top:16px;">합계 계산</button>
+                </div>
+            </div>
+
+            <!-- ④ 초과근무 월별집계 탭 -->
+            <div class="bosu-tab-content" id="bosuTab3">
+                <div class="calc-card full-width">
+                    <h2 class="calc-card-title">초과근무 월별집계 계산기</h2>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px;">
+                        <div class="input-group">
+                            <label>해당 월</label>
+                            <input type="month" id="monthly_month">
+                        </div>
+                        <div class="input-group">
+                            <label style="visibility:hidden">-</label>
+                            <button class="btn-auto-fill" onclick="loadAllTongRates()">저장된 통상시급 불러오기</button>
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="bosu-table" id="monthlyOTTable">
+                            <thead>
+                                <tr>
+                                    <th>성명</th><th>통상시급</th>
+                                    <th>연장100%<br>시간</th><th>연장100%<br>분</th>
+                                    <th>연장150%<br>시간</th><th>연장150%<br>분</th>
+                                    <th>야간50%<br>시간</th><th>야간50%<br>분</th>
+                                    <th>초과근무수당</th><th>삭제</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthlyOTBody"></tbody>
+                        </table>
+                    </div>
+                    <button class="btn-add-row" onclick="addMonthlyRow()">+ 직원 추가</button>
+                    <div class="result-box" id="monthlyOTResult" style="display:none;margin-top:16px;">
+                        <div class="result-title">월별 초과근무 합계</div>
+                        <div class="result-value" id="monthlyOTTotal">-</div>
+                        <div class="result-detail" id="monthlyOTDetail"></div>
+                    </div>
+                    <button class="calc-btn" onclick="calcMonthlyOT()" style="max-width:160px;margin-top:16px;">합계 계산</button>
+                </div>
+            </div>
+
+            <!-- ⑤ 급여 지급 내역 탭 -->
+            <div class="bosu-tab-content" id="bosuTab4">
+                <div class="calc-card full-width">
+                    <h2 class="calc-card-title">급여 지급 내역</h2>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px;">
+                        <div class="input-group">
+                            <label>귀속월</label>
+                            <input type="month" id="pay_month">
+                        </div>
+                        <div class="input-group">
+                            <label>지급일</label>
+                            <input type="date" id="pay_date">
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="bosu-table" id="payTable">
+                            <thead>
+                                <tr>
+                                    <th>이름</th><th>전환일</th><th>직종</th>
+                                    <th>기본급</th><th>근속수당</th><th>급식비</th><th>가족수당</th>
+                                    <th>교원연구비</th><th>교직수당</th><th>정근수당</th><th>정근수당가산금</th>
+                                    <th>시간외(정액)</th><th>연장근로수당</th><th>조정수당</th>
+                                    <th>지급액계</th>
+                                    <th>국민연금</th><th>건강보험</th><th>장기요양</th><th>고용보험</th>
+                                    <th>소득세</th><th>지방소득세</th>
+                                    <th>공제액계</th><th>실수령액</th><th>삭제</th>
+                                </tr>
+                            </thead>
+                            <tbody id="payTableBody"></tbody>
+                            <tfoot>
+                                <tr class="bosu-result-row" id="payTotalRow">
+                                    <td colspan="3">합계</td>
+                                    <td id="pt_basic">0</td><td id="pt_tenure">0</td><td id="pt_meal">0</td>
+                                    <td id="pt_family">0</td><td id="pt_edu">0</td><td id="pt_teach">0</td>
+                                    <td id="pt_regular">0</td><td id="pt_regular_add">0</td>
+                                    <td id="pt_overtime_fixed">0</td><td id="pt_overtime_extra">0</td><td id="pt_adjust">0</td>
+                                    <td id="pt_total_pay">0</td>
+                                    <td id="pt_pension">0</td><td id="pt_health">0</td><td id="pt_ltc">0</td>
+                                    <td id="pt_employ">0</td><td id="pt_income">0</td><td id="pt_local">0</td>
+                                    <td id="pt_total_ded">0</td><td id="pt_net">0</td><td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <button class="btn-add-row" onclick="addPayRow()">+ 직원 추가</button>
+                    <div class="info-box" style="margin-top:16px;">
+                        <div class="info-title">4대보험 공제 기준 (2025년)</div>
+                        <ul>
+                            <li><strong>국민연금:</strong> 기준소득월액 × 4.5%</li>
+                            <li><strong>건강보험:</strong> 보수월액 × 3.545%</li>
+                            <li><strong>장기요양보험:</strong> 건강보험료 × 12.95%</li>
+                            <li><strong>고용보험:</strong> 보수월액 × 0.9%</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ⑥ 임금명세서(교육공무직) 탭 -->
+            <div class="bosu-tab-content" id="bosuTab5">
+                <div class="calc-card full-width">
+                    <h2 class="calc-card-title">임금명세서 (교육공무직)</h2>
+                    <div class="명세서-section">
+                        <div class="명세서-section-title">기본 정보</div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">소속</div>
+                            <div class="명세서-value"><input type="text" id="ms1_school" placeholder="천안초등학교"></div>
+                            <div class="명세서-label">지급일</div>
+                            <div class="명세서-value"><input type="date" id="ms1_paydate"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">성명</div>
+                            <div class="명세서-value"><input type="text" id="ms1_name" placeholder="홍길동"></div>
+                            <div class="명세서-label">생년월일</div>
+                            <div class="명세서-value"><input type="date" id="ms1_birth" oninput="calcMs1Age()"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">직종명</div>
+                            <div class="명세서-value">
+                                <select id="ms1_job" onchange="autoFillMs1Job()">
+                                    <option value="">선택</option>
+                                    <option>영양사</option><option>전문상담사</option><option>운동부지도자</option>
+                                    <option>임상심리사</option><option>교무행정실무원</option><option>교무행정사</option>
+                                    <option>과학실험실무원</option><option>전산실무원</option><option>특수실무원</option>
+                                    <option>조리사</option><option>조리실무사</option><option>행정실무원(월급제)</option>
+                                    <option>시설관리원</option><option>초등돌봄전담사</option><option>환경실무원</option>
+                                    <option>초등스포츠강사</option><option>영어회화전문강사</option><option>교육복지사</option>
+                                </select>
+                            </div>
+                            <div class="명세서-label">근무형태</div>
+                            <div class="명세서-value">
+                                <select id="ms1_worktype">
+                                    <option>상시</option><option>방중비</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">최초계약일</div>
+                            <div class="명세서-value"><input type="date" id="ms1_contract"></div>
+                            <div class="명세서-label">귀속년월</div>
+                            <div class="명세서-value"><input type="month" id="ms1_month" oninput="calcMs1()"></div>
+                        </div>
+                    </div>
+                    <div class="명세서-section">
+                        <div class="명세서-section-title">급여 기초 정보</div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">비근무일 등 제외일</div>
+                            <div class="명세서-value"><input type="number" id="ms1_nowork" value="0" oninput="calcMs1()"></div>
+                            <div class="명세서-label">근속수당 산정연수</div>
+                            <div class="명세서-value"><input type="number" id="ms1_years" value="0" oninput="calcMs1()"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">신분변동 등 제외일</div>
+                            <div class="명세서-value"><input type="number" id="ms1_statuschange" value="0" oninput="calcMs1()"></div>
+                            <div class="명세서-label">통상시급</div>
+                            <div class="명세서-value" style="gap:8px;">
+                                <input type="number" id="ms1_hourly" placeholder="자동계산 또는 직접입력" oninput="calcMs1()">
+                                <button class="btn-auto-fill" onclick="loadTongRate('ms1_name','ms1_hourly');calcMs1()">불러오기</button>
+                            </div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">1일 근무시간(h)</div>
+                            <div class="명세서-value"><input type="number" id="ms1_daily_h" value="8" oninput="calcMs1()"></div>
+                            <div class="명세서-label">월소정근로시간</div>
+                            <div class="명세서-value"><input type="number" id="ms1_monthly_h" value="209" oninput="calcMs1()"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">연장근로 시/분</div>
+                            <div class="명세서-value" style="gap:6px;"><input type="number" id="ms1_ext_h" value="0" style="width:80px" oninput="calcMs1()"><span>시간</span><input type="number" id="ms1_ext_m" value="0" style="width:80px" oninput="calcMs1()"><span>분</span></div>
+                            <div class="명세서-label">법내연장 시/분</div>
+                            <div class="명세서-value" style="gap:6px;"><input type="number" id="ms1_law_h" value="0" style="width:80px" oninput="calcMs1()"><span>시간</span><input type="number" id="ms1_law_m" value="0" style="width:80px" oninput="calcMs1()"><span>분</span></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">휴일근로 시/분</div>
+                            <div class="명세서-value" style="gap:6px;"><input type="number" id="ms1_hol_h" value="0" style="width:80px" oninput="calcMs1()"><span>시간</span><input type="number" id="ms1_hol_m" value="0" style="width:80px" oninput="calcMs1()"><span>분</span></div>
+                            <div class="명세서-label">휴일연장 시/분</div>
+                            <div class="명세서-value" style="gap:6px;"><input type="number" id="ms1_holext_h" value="0" style="width:80px" oninput="calcMs1()"><span>시간</span><input type="number" id="ms1_holext_m" value="0" style="width:80px" oninput="calcMs1()"><span>분</span></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">야간근로 시/분</div>
+                            <div class="명세서-value" style="gap:6px;"><input type="number" id="ms1_night_h" value="0" style="width:80px" oninput="calcMs1()"><span>시간</span><input type="number" id="ms1_night_m" value="0" style="width:80px" oninput="calcMs1()"><span>분</span></div>
+                            <div class="명세서-label">가족수당</div>
+                            <div class="명세서-value"><input type="number" id="ms1_family" value="0" oninput="calcMs1()"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">연차미사용수당</div>
+                            <div class="명세서-value"><input type="number" id="ms1_annual" value="0" oninput="calcMs1()"></div>
+                            <div class="명세서-label">조정수당</div>
+                            <div class="명세서-value"><input type="number" id="ms1_adjust" value="0" oninput="calcMs1()"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">국민연금 기준소득월액</div>
+                            <div class="명세서-value"><input type="number" id="ms1_pension_base" value="0" oninput="calcMs1()"></div>
+                            <div class="명세서-label">건강보험 보수월액</div>
+                            <div class="명세서-value"><input type="number" id="ms1_health_base" value="0" oninput="calcMs1()"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">고용/산재보험 보수월액</div>
+                            <div class="명세서-value"><input type="number" id="ms1_employ_base" value="0" oninput="calcMs1()"></div>
+                            <div class="명세서-label">세금 적용 비율</div>
+                            <div class="명세서-value">
+                                <select id="ms1_tax_rate"><option value="0.8">80%</option><option value="1.0">100%</option><option value="1.2">120%</option></select>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="calc-btn" onclick="calcMs1()" style="max-width:160px;margin-bottom:20px;">계산하기</button>
+                    <div id="ms1Result" style="display:none;">
+                        <div class="명세서-section">
+                            <div class="명세서-section-title">급여 내역</div>
+                            <div id="ms1PayRows"></div>
+                            <div class="명세서-row" style="background:var(--google-blue-light);">
+                                <div class="명세서-label" style="font-weight:700;color:var(--google-blue);">급여 총액</div>
+                                <div class="명세서-value" style="font-weight:700;color:var(--google-blue);" id="ms1TotalPay">-</div>
+                                <div class="명세서-label" style="font-weight:700;color:var(--google-red);">공제 총액</div>
+                                <div class="명세서-value" style="font-weight:700;color:var(--google-red);" id="ms1TotalDed">-</div>
+                            </div>
+                            <div class="명세서-row" style="background:var(--google-blue-light);">
+                                <div class="명세서-label" style="font-weight:700;font-size:15px;color:var(--google-blue);">실수령액</div>
+                                <div class="명세서-value" style="font-weight:700;font-size:18px;color:var(--google-blue);grid-column:span 3;" id="ms1NetPay">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align:right;margin-top:12px;">
+                        <button onclick="window.print()" style="padding:10px 24px;background:var(--google-blue);color:white;border:none;border-radius:6px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;">🖨️ 인쇄</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ⑦ 임금명세서(유치원) 탭 -->
+            <div class="bosu-tab-content" id="bosuTab6">
+                <div class="calc-card full-width">
+                    <h2 class="calc-card-title">임금명세서 (유치원 시간제 교원)</h2>
+                    <div class="명세서-section">
+                        <div class="명세서-section-title">기본 정보</div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">소속</div>
+                            <div class="명세서-value"><input type="text" id="ms2_school" placeholder="천안초등학교"></div>
+                            <div class="명세서-label">지급일</div>
+                            <div class="명세서-value"><input type="date" id="ms2_paydate"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">성명</div>
+                            <div class="명세서-value"><input type="text" id="ms2_name" placeholder="홍길동"></div>
+                            <div class="명세서-label">생년월일</div>
+                            <div class="명세서-value"><input type="date" id="ms2_birth"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">직종명</div>
+                            <div class="명세서-value"><input type="text" id="ms2_job" value="유치원(4시간)"></div>
+                            <div class="명세서-label">근무형태</div>
+                            <div class="명세서-value"><select id="ms2_worktype"><option>상시</option><option>방중비</option></select></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">최초계약일</div>
+                            <div class="명세서-value"><input type="date" id="ms2_contract"></div>
+                            <div class="명세서-label">귀속년월</div>
+                            <div class="명세서-value"><input type="month" id="ms2_month" oninput="calcMs2()"></div>
+                        </div>
+                    </div>
+                    <div class="명세서-section">
+                        <div class="명세서-section-title">급여 기초 정보</div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">비근무일 등 제외일</div>
+                            <div class="명세서-value"><input type="number" id="ms2_nowork" value="0" oninput="calcMs2()"></div>
+                            <div class="명세서-label">신분변동 등 제외일</div>
+                            <div class="명세서-value"><input type="number" id="ms2_statuschange" value="0" oninput="calcMs2()"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">기본급</div>
+                            <div class="명세서-value"><input type="number" id="ms2_basic" value="1681250" oninput="calcMs2()"></div>
+                            <div class="명세서-label">급식비</div>
+                            <div class="명세서-value"><input type="number" id="ms2_meal" value="140000" oninput="calcMs2()"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">교원연구비</div>
+                            <div class="명세서-value"><input type="number" id="ms2_research" value="30000" oninput="calcMs2()"></div>
+                            <div class="명세서-label">교직수당</div>
+                            <div class="명세서-value"><input type="number" id="ms2_teach" value="125000" oninput="calcMs2()"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">정근수당</div>
+                            <div class="명세서-value"><input type="number" id="ms2_regular" value="0" oninput="calcMs2()"></div>
+                            <div class="명세서-label">정근수당가산금</div>
+                            <div class="명세서-value"><input type="number" id="ms2_regular_add" value="30000" oninput="calcMs2()"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">시간외수당(정액)</div>
+                            <div class="명세서-value"><input type="number" id="ms2_ot_fixed" value="137330" oninput="calcMs2()"></div>
+                            <div class="명세서-label">시간외수당(초과)</div>
+                            <div class="명세서-value"><input type="number" id="ms2_ot_extra" value="0" oninput="calcMs2()"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">국민연금 기준소득월액</div>
+                            <div class="명세서-value"><input type="number" id="ms2_pension_base" value="2258930" oninput="calcMs2()"></div>
+                            <div class="명세서-label">건강보험 보수월액</div>
+                            <div class="명세서-value"><input type="number" id="ms2_health_base" value="2258930" oninput="calcMs2()"></div>
+                        </div>
+                        <div class="명세서-row">
+                            <div class="명세서-label">고용보험 보수월액</div>
+                            <div class="명세서-value"><input type="number" id="ms2_employ_base" value="2258930" oninput="calcMs2()"></div>
+                            <div class="명세서-label">소득세 (직접입력)</div>
+                            <div class="명세서-value"><input type="number" id="ms2_incometax" value="14900" oninput="calcMs2()"></div>
+                        </div>
+                    </div>
+                    <button class="calc-btn" onclick="calcMs2()" style="max-width:160px;margin-bottom:20px;">계산하기</button>
+                    <div id="ms2Result" style="display:none;">
+                        <div class="명세서-section">
+                            <div class="명세서-section-title">급여 내역</div>
+                            <div id="ms2PayRows"></div>
+                            <div class="명세서-row" style="background:var(--google-blue-light);">
+                                <div class="명세서-label" style="font-weight:700;color:var(--google-blue);">급여 총액</div>
+                                <div class="명세서-value" style="font-weight:700;color:var(--google-blue);" id="ms2TotalPay">-</div>
+                                <div class="명세서-label" style="font-weight:700;color:var(--google-red);">공제 총액</div>
+                                <div class="명세서-value" style="font-weight:700;color:var(--google-red);" id="ms2TotalDed">-</div>
+                            </div>
+                            <div class="명세서-row" style="background:var(--google-blue-light);">
+                                <div class="명세서-label" style="font-weight:700;font-size:15px;color:var(--google-blue);">실수령액</div>
+                                <div class="명세서-value" style="font-weight:700;font-size:18px;color:var(--google-blue);grid-column:span 3;" id="ms2NetPay">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align:right;margin-top:12px;">
+                        <button onclick="window.print()" style="padding:10px 24px;background:var(--google-blue);color:white;border:none;border-radius:6px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;">🖨️ 인쇄</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+    // 페이지 전환 함수
+function showCalculator() {
+    document.getElementById('mainPage').classList.remove('active');
+    document.getElementById('calculatorPage').classList.add('active');
+    document.getElementById('vacationCalculatorPage').classList.remove('active');
+    window.scrollTo(0, 0);
+    
+    const today = new Date();
+    if (document.getElementById('workDate1')) document.getElementById('workDate1').valueAsDate = today;
+    if (document.getElementById('workDate2')) document.getElementById('workDate2').valueAsDate = today;
+}
+
+function showVacationCalculator() {
+    document.getElementById('mainPage').classList.remove('active');
+    document.getElementById('calculatorPage').classList.remove('active');
+    document.getElementById('vacationCalculatorPage').classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+function showMain() {
+    document.getElementById('calculatorPage').classList.remove('active');
+    document.getElementById('vacationCalculatorPage').classList.remove('active');
+    document.getElementById('bosuCalculatorPage').classList.remove('active');
+    document.getElementById('mainPage').classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+        
+        // 일용근로 급여 계산
+        function calculateAll() {
+            const dailyWage = parseFloat(document.getElementById('dailyWage').value);
+            const workDays = parseFloat(document.getElementById('workDays').value);
+            const resultBox = document.getElementById('allResult');
+            const netPayEl = document.getElementById('finalNetPay');
+            const detailEl = document.getElementById('allDetail');
+
+            if (!dailyWage || dailyWage <= 0) {
+                alert('일당을 입력해주세요');
+                return;
+            }
+
+            if (!workDays || workDays <= 0) {
+                alert('보수지급 기초일수를 입력해주세요');
+                return;
+            }
+
+            const totalWage = dailyWage * workDays;
+            const taxFreeLimit = 150000;
+            let taxableAmount = 0;
+            let incomeTax = 0;
+            let localTax = 0;
+
+            if (dailyWage > taxFreeLimit) {
+                const dailyTaxableAmount = dailyWage - taxFreeLimit;
+                taxableAmount = dailyTaxableAmount * workDays;
+                incomeTax = Math.floor(taxableAmount * 0.06);
+                localTax = Math.floor(incomeTax * 0.1);
+            }
+
+            const employmentInsurance = Math.floor(totalWage * 0.009);
+            const totalDeduction = incomeTax + localTax + employmentInsurance;
+            const netPay = totalWage - totalDeduction;
+
+            netPayEl.textContent = netPay.toLocaleString() + '원';
+            detailEl.innerHTML = `
+                <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--google-gray-200);">
+                    <div style="font-size: 12px; color: var(--google-gray-700); margin-bottom: 10px; text-transform: uppercase;">급여 내역</div>
+                    <div class="result-detail-item">
+                        <span class="result-detail-label">일당</span>
+                        <span class="result-detail-value">${dailyWage.toLocaleString()}원</span>
+                    </div>
+                    <div class="result-detail-item">
+                        <span class="result-detail-label">보수지급 기초일수</span>
+                        <span class="result-detail-value">${workDays}일</span>
+                    </div>
+                    <div class="result-detail-item">
+                        <span class="result-detail-label" style="font-weight: 700; color: var(--google-blue);">총보수액 (일당 × 일수)</span>
+                        <span class="result-detail-value" style="font-weight: 700; color: var(--google-blue);">${totalWage.toLocaleString()}원</span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--google-gray-200);">
+                    <div style="font-size: 12px; color: var(--google-gray-700); margin-bottom: 10px; text-transform: uppercase;">소득세</div>
+                    <div class="result-detail-item">
+                        <span class="result-detail-label">일당 비과세 한도</span>
+                        <span class="result-detail-value">${taxFreeLimit.toLocaleString()}원</span>
+                    </div>
+                    <div class="result-detail-item">
+                        <span class="result-detail-label">총 과세 대상액 (× ${workDays}일)</span>
+                        <span class="result-detail-value">${taxableAmount.toLocaleString()}원</span>
+                    </div>
+                    <div class="result-detail-item">
+                        <span class="result-detail-label">소득세 (6%)</span>
+                        <span class="result-detail-value" style="color: var(--google-red);">-${incomeTax.toLocaleString()}원</span>
+                    </div>
+                    <div class="result-detail-item">
+                        <span class="result-detail-label">지방소득세 (10%)</span>
+                        <span class="result-detail-value" style="color: var(--google-red);">-${localTax.toLocaleString()}원</span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--google-gray-200);">
+                    <div style="font-size: 12px; color: var(--google-gray-700); margin-bottom: 10px; text-transform: uppercase;">4대보험</div>
+                    <div class="result-detail-item">
+                        <span class="result-detail-label">고용보험 (총보수액의 0.9%)</span>
+                        <span class="result-detail-value" style="color: var(--google-red);">-${employmentInsurance.toLocaleString()}원</span>
+                    </div>
+                    <div class="result-detail-item">
+                        <span class="result-detail-label">산재보험</span>
+                        <span class="result-detail-value" style="color: var(--google-green);">사업주 부담</span>
+                    </div>
+                </div>
+
+                <div style="background: var(--google-blue-light); padding: 15px; border-radius: var(--border-radius); margin-top: 15px;">
+                    <div class="result-detail-item" style="border: none;">
+                        <span class="result-detail-label" style="font-size: 14px; font-weight: 500;">총 공제액</span>
+                        <span class="result-detail-value" style="color: var(--google-red); font-size: 16px;">-${totalDeduction.toLocaleString()}원</span>
+                    </div>
+                    <div class="result-detail-item" style="border: none; margin-top: 10px; padding-top: 10px; border-top: 2px solid var(--google-blue);">
+                        <span class="result-detail-label" style="font-size: 16px; color: var(--google-blue); font-weight: 500;">실수령액</span>
+                        <span class="result-detail-value" style="font-size: 20px; color: var(--google-blue); font-weight: 500;">${netPay.toLocaleString()}원</span>
+                    </div>
+                </div>
+            `;
+
+            resultBox.style.display = 'block';
+        }
+
+        // 연장근로 시간 계산
+        function calculateBasicWorkHours() {
+            const date = document.getElementById('workDate1').value;
+            const startTime = document.getElementById('startTime1').value;
+            const endTime = document.getElementById('endTime1').value;
+            const breakMinutes = parseFloat(document.getElementById('breakTime1').value) || 0;
+            
+            const resultBox = document.getElementById('timeResult1');
+            const totalHoursEl = document.getElementById('totalHours1');
+            const detailEl = document.getElementById('timeDetail1');
+
+            if (!date || !startTime || !endTime) {
+                alert('날짜와 시간을 모두 입력해주세요');
+                return;
+            }
+
+            const start = new Date(`${date}T${startTime}`);
+            let end = new Date(`${date}T${endTime}`);
+
+            if (end <= start) {
+                end.setDate(end.getDate() + 1);
+            }
+
+            const diffMs = end - start;
+            const totalMinutes = Math.floor(diffMs / 1000 / 60);
+            const workMinutes = totalMinutes - breakMinutes;
+            const workHours = Math.floor(workMinutes / 60);
+            const workMins = workMinutes % 60;
+
+            totalHoursEl.textContent = `${workHours}시간 ${workMins}분`;
+            detailEl.innerHTML = `
+                <div class="result-detail-item">
+                    <span class="result-detail-label">근무 날짜</span>
+                    <span class="result-detail-value">${date}</span>
+                </div>
+                <div class="result-detail-item">
+                    <span class="result-detail-label">시작 시간</span>
+                    <span class="result-detail-value">${startTime}</span>
+                </div>
+                <div class="result-detail-item">
+                    <span class="result-detail-label">종료 시간</span>
+                    <span class="result-detail-value">${endTime}${end.getDate() !== start.getDate() ? ' (익일)' : ''}</span>
+                </div>
+                <div class="result-detail-item">
+                    <span class="result-detail-label">총 시간 (휴게 포함)</span>
+                    <span class="result-detail-value">${Math.floor(totalMinutes / 60)}시간 ${totalMinutes % 60}분</span>
+                </div>
+                <div class="result-detail-item">
+                    <span class="result-detail-label">휴게 시간</span>
+                    <span class="result-detail-value">${breakMinutes}분</span>
+                </div>
+                <div class="result-detail-item" style="background: var(--google-blue-light); padding: 12px; margin-top: 10px; border-radius: var(--border-radius); border: none;">
+                    <span class="result-detail-label" style="font-size: 14px; color: var(--google-blue); font-weight: 500;">총 실근무 시간</span>
+                    <span class="result-detail-value" style="font-size: 16px; color: var(--google-blue); font-weight: 500;">${workHours}시간 ${workMins}분</span>
+                </div>
+            `;
+
+            resultBox.style.display = 'block';
+        }
+
+        // 연장근로비 계산 (기존 calculateSalaryByJob 함수와 동일한 로직)
+        function calculateSalaryByJob() {
+            const jobType = parseFloat(document.getElementById('jobType').value);
+            const hourlyRate = parseFloat(document.getElementById('hourlyRate').value);
+            const date = document.getElementById('workDate2').value;
+            const startTime = document.getElementById('startTime2').value;
+            const endTime = document.getElementById('endTime2').value;
+            const breakMinutes = parseFloat(document.getElementById('breakTime2').value) || 0;
+            
+            const resultBox = document.getElementById('salaryResult');
+            const totalSalaryEl = document.getElementById('totalSalary');
+            const detailEl = document.getElementById('salaryDetail');
+
+            if (!hourlyRate || hourlyRate <= 0) {
+                alert('통상시급을 입력해주세요');
+                return;
+            }
+
+            if (!date || !startTime || !endTime) {
+                alert('날짜와 시간을 모두 입력해주세요');
+                return;
+            }
+
+            const start = new Date(`${date}T${startTime}`);
+            let end = new Date(`${date}T${endTime}`);
+
+            if (end <= start) {
+                end.setDate(end.getDate() + 1);
+            }
+
+            let regularPay = 0;
+            let overtimePay = 0;
+            let nightPay = 0;
+            let detailText = '';
+
+            const nightStart = new Date(`${date}T22:00`);
+            const nightEnd = new Date(date);
+            nightEnd.setDate(nightEnd.getDate() + 1);
+            nightEnd.setHours(6, 0, 0, 0);
+
+            if (jobType === 7.5) {
+                const workStart = new Date(`${date}T08:30`);
+                const workEnd = new Date(`${date}T16:30`);
+
+                let before8MinutesAt150 = 0;
+                let before8MinutesAt100 = 0;
+                let regularMinutes = 0;
+                let afterWorkUnpaid = 0;
+                let afterWorkAt100 = 0;
+                let afterWorkAt150 = 0;
+                let nightMinutesAt200 = 0;
+
+                if (start < workStart) {
+                    const beforeStart8am = new Date(`${date}T08:00`);
+                    
+                    if (start < beforeStart8am) {
+                        before8MinutesAt100 = 30;
+                        const before8Time = Math.floor((beforeStart8am - start) / 60000);
+                        before8MinutesAt150 = before8Time;
+                    } else {
+                        before8MinutesAt100 = Math.floor((workStart - start) / 60000);
+                    }
+                }
+
+                const actualWorkStart = start < workStart ? workStart : start;
+                const actualWorkEnd = end > workEnd ? workEnd : end;
+                
+                if (actualWorkEnd > actualWorkStart) {
+                    const totalRegularMinutes = Math.floor((actualWorkEnd - actualWorkStart) / 60000);
+                    regularMinutes = Math.min(totalRegularMinutes, 450);
+                }
+
+                if (end > workEnd) {
+                    const time1700 = new Date(`${date}T17:00`);
+                    const time1730 = new Date(`${date}T17:30`);
+                    
+                    if (end.getDate() !== new Date(date).getDate()) {
+                        time1700.setDate(time1700.getDate() + 1);
+                        time1730.setDate(time1730.getDate() + 1);
+                    }
+
+                    afterWorkUnpaid = Math.min(30, Math.floor((end - workEnd) / 60000));
+                    
+                    if (end > time1700) {
+                        afterWorkAt100 = Math.min(30, Math.floor((end - time1700) / 60000));
+                    }
+                    
+                    if (end > time1730) {
+                        const endBeforeNight = end < nightStart ? end : nightStart;
+                        if (endBeforeNight > time1730) {
+                            afterWorkAt150 = Math.floor((endBeforeNight - time1730) / 60000);
+                        }
+                    }
+                    
+                    if (end > nightStart) {
+                        const nightEndTime = end < nightEnd ? end : nightEnd;
+                        nightMinutesAt200 = Math.floor((nightEndTime - nightStart) / 60000);
+                    }
+                }
+
+                regularMinutes = Math.max(0, regularMinutes - breakMinutes);
+
+                regularPay = (regularMinutes / 60) * hourlyRate;
+                
+                overtimePay = 
+                    (before8MinutesAt150 / 60) * hourlyRate * 1.5 +
+                    (before8MinutesAt100 / 60) * hourlyRate * 1.0 +
+                    (afterWorkAt100 / 60) * hourlyRate * 1.0 +
+                    (afterWorkAt150 / 60) * hourlyRate * 1.5;
+                
+                nightPay = (nightMinutesAt200 / 60) * hourlyRate * 2.0;
+
+                detailText = `
+                    <div style="margin: 15px 0; padding: 12px; background: var(--google-gray-50); border-radius: var(--border-radius);">
+                        <div style="font-size: 12px; color: var(--google-gray-700); margin-bottom: 10px; text-transform: uppercase;">시간별 상세 (기준: 08:30-16:30)</div>
+                        ${before8MinutesAt150 > 0 ? `
+                        <div class="result-detail-item">
+                            <span class="result-detail-label">출근 전 초과 (08:00 이전)</span>
+                            <span class="result-detail-value">${before8MinutesAt150}분 × 150%</span>
+                        </div>
+                        ` : ''}
+                        ${before8MinutesAt100 > 0 ? `
+                        <div class="result-detail-item">
+                            <span class="result-detail-label">출근 전 (08:00-08:30)</span>
+                            <span class="result-detail-value">${before8MinutesAt100}분 × 100%</span>
+                        </div>
+                        ` : ''}
+                        <div class="result-detail-item">
+                            <span class="result-detail-label">정규 근무 (7.5시간)</span>
+                            <span class="result-detail-value">${(regularMinutes / 60).toFixed(2)}시간 × 100%</span>
+                        </div>
+                        ${afterWorkUnpaid > 0 ? `
+                        <div class="result-detail-item">
+                            <span class="result-detail-label" style="color: var(--google-red);">퇴근 후 (16:30-17:00)</span>
+                            <span class="result-detail-value" style="color: var(--google-red);">${afterWorkUnpaid}분 무급</span>
+                        </div>
+                        ` : ''}
+                        ${afterWorkAt100 > 0 ? `
+                        <div class="result-detail-item">
+                            <span class="result-detail-label">퇴근 후 (17:00-17:30)</span>
+                            <span class="result-detail-value">${afterWorkAt100}분 × 100%</span>
+                        </div>
+                        ` : ''}
+                        ${afterWorkAt150 > 0 ? `
+                        <div class="result-detail-item">
+                            <span class="result-detail-label">퇴근 후 (17:30-22:00)</span>
+                            <span class="result-detail-value">${afterWorkAt150}분 × 150%</span>
+                        </div>
+                        ` : ''}
+                        ${nightMinutesAt200 > 0 ? `
+                        <div class="result-detail-item">
+                            <span class="result-detail-label" style="color: #9334e9;">야간 (22:00-06:00)</span>
+                            <span class="result-detail-value" style="color: #9334e9;">${nightMinutesAt200}분 × 200%</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            } else {
+                const totalMinutes = Math.floor((end - start) / 60000);
+                const workMinutes = totalMinutes - breakMinutes;
+                
+                let daytimeMinutes = 0;
+                let nightMinutes = 0;
+                
+                let currentTime = new Date(start);
+                let remainingMinutes = workMinutes;
+                
+                while (remainingMinutes > 0 && currentTime < end) {
+                    const currentHour = currentTime.getHours();
+                    const isNightTime = currentHour >= 22 || currentHour < 6;
+                    
+                    if (isNightTime) {
+                        let nightEndTime;
+                        if (currentHour >= 22) {
+                            nightEndTime = new Date(currentTime);
+                            nightEndTime.setDate(nightEndTime.getDate() + 1);
+                            nightEndTime.setHours(6, 0, 0, 0);
+                        } else {
+                            nightEndTime = new Date(currentTime);
+                            nightEndTime.setHours(6, 0, 0, 0);
+                        }
+                        
+                        const nightPeriodEnd = end < nightEndTime ? end : nightEndTime;
+                        const nightPeriodMinutes = Math.floor((nightPeriodEnd - currentTime) / 60000);
+                        const minutesToAdd = Math.min(nightPeriodMinutes, remainingMinutes);
+                        
+                        nightMinutes += minutesToAdd;
+                        remainingMinutes -= minutesToAdd;
+                        currentTime = new Date(currentTime.getTime() + minutesToAdd * 60000);
+                    } else {
+                        const daytimeEndTime = new Date(currentTime);
+                        daytimeEndTime.setHours(22, 0, 0, 0);
+                        
+                        const daytimePeriodEnd = end < daytimeEndTime ? end : daytimeEndTime;
+                        const daytimePeriodMinutes = Math.floor((daytimePeriodEnd - currentTime) / 60000);
+                        const minutesToAdd = Math.min(daytimePeriodMinutes, remainingMinutes);
+                        
+                        daytimeMinutes += minutesToAdd;
+                        remainingMinutes -= minutesToAdd;
+                        currentTime = new Date(currentTime.getTime() + minutesToAdd * 60000);
+                    }
+                }
+                
+                regularPay = 0;
+                overtimePay = (daytimeMinutes / 60) * hourlyRate * 1.5;
+                nightPay = (nightMinutes / 60) * hourlyRate * 2.0;
+
+                detailText = `
+                    <div style="margin: 15px 0; padding: 12px; background: var(--google-gray-50); border-radius: var(--border-radius);">
+                        <div style="font-size: 12px; color: var(--google-gray-700); margin-bottom: 10px; text-transform: uppercase;">시간별 상세 (${jobType}시간 근무자)</div>
+                        <div class="result-detail-item">
+                            <span class="result-detail-label">총 근무시간 (휴게 제외)</span>
+                            <span class="result-detail-value">${Math.floor(workMinutes / 60)}시간 ${workMinutes % 60}분</span>
+                        </div>
+                        ${daytimeMinutes > 0 ? `
+                        <div class="result-detail-item">
+                            <span class="result-detail-label">일반 시간 (06:00-22:00)</span>
+                            <span class="result-detail-value">${Math.floor(daytimeMinutes / 60)}시간 ${daytimeMinutes % 60}분 × 150%</span>
+                        </div>
+                        ` : ''}
+                        ${nightMinutes > 0 ? `
+                        <div class="result-detail-item">
+                            <span class="result-detail-label" style="color: #9334e9;">야간 시간 (22:00-06:00)</span>
+                            <span class="result-detail-value" style="color: #9334e9;">${Math.floor(nightMinutes / 60)}시간 ${nightMinutes % 60}분 × 200%</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            const totalSalary = regularPay + overtimePay + nightPay;
+
+            totalSalaryEl.textContent = Math.floor(totalSalary).toLocaleString() + '원';
+            detailEl.innerHTML = `
+                <div class="result-detail-item">
+                    <span class="result-detail-label">통상시급</span>
+                    <span class="result-detail-value">${hourlyRate.toLocaleString()}원</span>
+                </div>
+                <div class="result-detail-item">
+                    <span class="result-detail-label">근무 시간</span>
+                    <span class="result-detail-value">${startTime} ~ ${endTime}${end.getDate() !== start.getDate() ? ' (익일)' : ''}</span>
+                </div>
+                ${detailText}
+                <div style="background: var(--google-blue-light); padding: 15px; border-radius: var(--border-radius); margin-top: 15px;">
+                    ${regularPay > 0 ? `
+                    <div class="result-detail-item" style="border: none;">
+                        <span class="result-detail-label">기본 급여 (100%)</span>
+                        <span class="result-detail-value">${Math.floor(regularPay).toLocaleString()}원</span>
+                    </div>
+                    ` : ''}
+                    ${overtimePay > 0 ? `
+                    <div class="result-detail-item" style="border: none;">
+                        <span class="result-detail-label">일반 시간 수당 (150%)</span>
+                        <span class="result-detail-value">${Math.floor(overtimePay).toLocaleString()}원</span>
+                    </div>
+                    ` : ''}
+                    ${nightPay > 0 ? `
+                    <div class="result-detail-item" style="border: none;">
+                        <span class="result-detail-label" style="color: #9334e9;">야간 시간 수당 (200%)</span>
+                        <span class="result-detail-value" style="color: #9334e9;">${Math.floor(nightPay).toLocaleString()}원</span>
+                    </div>
+                    ` : ''}
+                    <div class="result-detail-item" style="border: none; margin-top: 10px; padding-top: 10px; border-top: 2px solid var(--google-blue);">
+                        <span class="result-detail-label" style="font-size: 16px; color: var(--google-blue); font-weight: 500;">총 급여</span>
+                        <span class="result-detail-value" style="font-size: 20px; color: var(--google-blue); font-weight: 500;">${Math.floor(totalSalary).toLocaleString()}원</span>
+                    </div>
+                </div>
+            `;
+
+            resultBox.style.display = 'block';
+        }
+
+        // 엔터키 이벤트
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                
+                if (activeElement.id === 'dailyWage' || activeElement.id === 'workDays' || activeElement.id === 'industryType') {
+                    calculateAll();
+                } else if (activeElement.id === 'workDate1' || activeElement.id === 'startTime1' || 
+                           activeElement.id === 'endTime1' || activeElement.id === 'breakTime1') {
+                    calculateBasicWorkHours();
+                } else if (activeElement.id === 'hourlyRate' || activeElement.id === 'workDate2' || 
+                           activeElement.id === 'startTime2' || activeElement.id === 'endTime2' || activeElement.id === 'breakTime2') {
+                    calculateSalaryByJob();
+                }
+            }
+        });
+        function showVacationCalculator() {
+            document.getElementById('mainPage').classList.remove('active');
+            document.getElementById('calculatorPage').classList.remove('active');
+            document.getElementById('vacationCalculatorPage').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        async function processVacationFile() {
+            const fileInput = document.getElementById('vacationFile');
+            const files = fileInput.files;
+            
+            if (!files || files.length === 0) {
+                alert('파일을 선택해주세요.');
+                return;
+            }
+
+            document.getElementById('vacationProcessing').style.display = 'block';
+            document.getElementById('vacationResultCard').style.display = 'none';
+
+            try {
+                const startTime = Date.now();
+                const allResults = new Map();
+                const allErrors = [];
+                
+                // 여러 파일 처리
+                for (let i = 0; i < files.length; i++) {
+                    const data = await readExcelFile(files[i]);
+                    const results = processVacationData(data);
+                    
+                    // 결과 병합
+                    results.data.forEach(item => {
+                        const key = item.name + '|' + item.jobType;
+                        if (allResults.has(key)) {
+                            const existing = allResults.get(key);
+                            existing.totalDays += item.totalDays;
+                        } else {
+                            allResults.set(key, { ...item });
+                        }
+                    });
+                    
+                    // 오류 수집
+                    allErrors.push(...results.errors);
+                }
+                
+                const processingTime = ((Date.now() - startTime) / 1000).toFixed(2);
+                
+                // 결과를 배열로 변환
+                const finalResults = {
+                    data: Array.from(allResults.values()),
+                    errors: allErrors
+                };
+                
+                displayVacationResults(finalResults, processingTime);
+            } catch (error) {
+                alert('파일 처리 중 오류가 발생했습니다: ' + error.message);
+                console.error(error);
+            } finally {
+                document.getElementById('vacationProcessing').style.display = 'none';
+            }
+        }
+
+        async function readExcelFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        
+                        if (!workbook.SheetNames.includes('근무상황목록')) {
+                            reject(new Error("'근무상황목록' 시트를 찾을 수 없습니다."));
+                            return;
+                        }
+                        
+                        const worksheet = workbook.Sheets['근무상황목록'];
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+                        
+                        resolve(jsonData);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                
+                reader.onerror = function() {
+                    reject(new Error('파일을 읽을 수 없습니다.'));
+                };
+                
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        function processVacationData(data) {
+            const results = new Map();
+            const errors = [];
+            
+            for (let i = 1; i < data.length; i++) {
+                const row = data[i];
+                
+                const name = String(row[2] || '').trim();
+                const jobType = String(row[3] || '').trim();
+                const duration = String(row[5] || '').trim();
+                
+                // 이름이 없으면 조용히 건너뛰기 (오류 표시 안 함)
+                if (!name) {
+                    continue;
+                }
+                
+                if (!duration) {
+                    continue;
+                }
+                
+                try {
+                    const days = parseDuration(duration, jobType);
+                    
+                    if (results.has(name)) {
+                        const existing = results.get(name);
+                        existing.totalDays += days;
+                    } else {
+                        results.set(name, {
+                            name: name,
+                            jobType: jobType,
+                            totalDays: days
+                        });
+                    }
+                } catch (error) {
+                    errors.push(`행 ${i + 1} (${name}): ${error.message}`);
+                }
+            }
+            
+            return {
+                data: Array.from(results.values()),
+                errors: errors
+            };
+        }
+
+        function parseDuration(durationStr, jobType) {
+            let days = 0, hours = 0, minutes = 0;
+            
+            const dayMatch = durationStr.match(/(\d+)일/);
+            const hourMatch = durationStr.match(/(\d+)시간/);
+            const minuteMatch = durationStr.match(/(\d+)분/);
+            
+            if (dayMatch) days = parseInt(dayMatch[1]);
+            if (hourMatch) hours = parseInt(hourMatch[1]);
+            if (minuteMatch) minutes = parseInt(minuteMatch[1]);
+            
+            if (jobType === '환경실무원' || jobType === '초등돌봄전담사') {
+                if (hours === 5 && minutes === 30) {
+                    return days + 1;
+                }
+                return days;
+            }
+            
+            return days + (hours / 24) + (minutes / 1440);
+        }
+
+        function daysToText(totalDays) {
+            const days = Math.floor(totalDays);
+            const remainingHours = (totalDays - days) * 24;
+            const hours = Math.floor(remainingHours);
+            const minutes = Math.round((remainingHours - hours) * 60);
+            
+            let finalMinutes = minutes;
+            let finalHours = hours;
+            let finalDays = days;
+            
+            if (finalMinutes >= 60) {
+                finalHours += Math.floor(finalMinutes / 60);
+                finalMinutes = finalMinutes % 60;
+            }
+            
+            if (finalHours >= 24) {
+                finalDays += Math.floor(finalHours / 24);
+                finalHours = finalHours % 24;
+            }
+            
+            return `${finalDays}일 ${finalHours}시간 ${finalMinutes}분`;
+        }
+
+        function displayVacationResults(results, processingTime) {
+            const resultCard = document.getElementById('vacationResultCard');
+            const tableBody = document.getElementById('vacationTableBody');
+            const totalCount = document.getElementById('vacationTotalCount');
+            const errorDiv = document.getElementById('vacationErrors');
+            const errorList = document.getElementById('vacationErrorList');
+            
+            tableBody.innerHTML = '';
+            results.data.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.style.borderBottom = '1px solid var(--google-gray-200)';
+                if (index % 2 === 0) {
+                    row.style.background = 'var(--google-gray-50)';
+                }
+                
+                row.innerHTML = `
+                    <td style="padding: 12px; color: var(--google-gray-900);">${item.name}</td>
+                    <td style="padding: 12px; color: var(--google-gray-700);">${item.jobType}</td>
+                    <td style="padding: 12px; text-align: right; color: var(--google-blue); font-weight: 500;">${daysToText(item.totalDays)}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            totalCount.textContent = results.data.length;
+            
+            if (results.errors.length > 0) {
+                errorDiv.style.display = 'block';
+                errorList.innerHTML = results.errors.map(err => `<div style="margin: 4px 0;">• ${err}</div>`).join('');
+            } else {
+                errorDiv.style.display = 'none';
+            }
+            
+            resultCard.style.display = 'block';
+            
+            if (results.errors.length === 0) {
+                alert(`✅ 처리 완료!\n처리 시간: ${processingTime}초\n처리 건수: ${results.data.length}건`);
+            }
+        }
+
+        // 초기화 함수
+        function resetVacationCalculator() {
+            // 파일 입력 초기화
+            document.getElementById('vacationFile').value = '';
+            
+            // 결과 카드 숨기기
+            document.getElementById('vacationResultCard').style.display = 'none';
+            
+            // 처리 중 메시지 숨기기
+            document.getElementById('vacationProcessing').style.display = 'none';
+            
+            // 테이블 내용 초기화
+            document.getElementById('vacationTableBody').innerHTML = '';
+            
+            // 오류 메시지 초기화
+            document.getElementById('vacationErrors').style.display = 'none';
+            document.getElementById('vacationErrorList').innerHTML = '';
+            
+            // 카운트 초기화
+            document.getElementById('vacationTotalCount').textContent = '0';
+            
+            alert('초기화되었습니다.');
+        }
+
+        // ========== 연차 사용일수 계산기 함수들 ==========
+        
+        async function processAnnualFile() {
+            const fileInput = document.getElementById('annualFile');
+            const files = fileInput.files;
+            
+            if (!files || files.length === 0) {
+                alert('파일을 선택해주세요.');
+                return;
+            }
+
+            document.getElementById('annualProcessing').style.display = 'block';
+            document.getElementById('annualResultCard').style.display = 'none';
+
+            try {
+                const startTime = Date.now();
+                const allResults = new Map();
+                
+                // 여러 파일 처리
+                for (let i = 0; i < files.length; i++) {
+                    const data = await readExcelFile(files[i]);
+                    processAnnualData(data, allResults);
+                }
+                
+                const processingTime = ((Date.now() - startTime) / 1000).toFixed(2);
+                displayAnnualResults(allResults, processingTime);
+                
+            } catch (error) {
+                alert('파일 처리 중 오류가 발생했습니다: ' + error.message);
+                console.error(error);
+            } finally {
+                document.getElementById('annualProcessing').style.display = 'none';
+            }
+        }
+
+        function processAnnualData(data, resultsMap) {
+            for (let i = 1; i < data.length; i++) {
+                const row = data[i];
+                
+                const name = String(row[2] || '').trim();
+                const jobType = standardizeJobType(String(row[3] || '').trim());
+                const timeStr = String(row[5] || '').trim();
+                
+                // 이름이 없으면 조용히 건너뛰기
+                if (!name) {
+                    continue;
+                }
+                
+                if (!timeStr) {
+                    continue;
+                }
+                
+                try {
+                    const minutes = parseAnnualTime(timeStr, jobType);
+                    const key = name + '|' + jobType;
+                    
+                    if (resultsMap.has(key)) {
+                        resultsMap.set(key, resultsMap.get(key) + minutes);
+                    } else {
+                        resultsMap.set(key, minutes);
+                    }
+                } catch (error) {
+                    console.error(`행 ${i + 1} (${name}): ${error.message}`);
+                }
+            }
+        }
+
+        function standardizeJobType(job) {
+            if (job.includes('초등돌봄전담사')) return '초등돌봄전담사';
+            if (job.includes('환경실무원')) return '환경실무원';
+            return job;
+        }
+
+        function parseAnnualTime(timeStr, jobType) {
+            // "1일 2시간 30분" 형태 파싱
+            let days = 0, hours = 0, mins = 0;
+            
+            const dayMatch = timeStr.match(/(\d+)일/);
+            if (dayMatch) days = parseInt(dayMatch[1]);
+            
+            const hourMatch = timeStr.match(/(\d+)시간/);
+            if (hourMatch) hours = parseInt(hourMatch[1]);
+            
+            const minMatch = timeStr.match(/(\d+)분/);
+            if (minMatch) mins = parseInt(minMatch[1]);
+            
+            // 직종별 분 단위로 변환
+            if (jobType === '초등돌봄전담사' || jobType === '환경실무원') {
+                // 5시간(300분) = 1일
+                return (days * 300) + (hours * 60) + mins;
+            } else {
+                // 8시간(480분) = 1일
+                return (days * 480) + (hours * 60) + mins;
+            }
+        }
+
+        function displayAnnualResults(resultsMap, processingTime) {
+            const resultCard = document.getElementById('annualResultCard');
+            const tableBody = document.getElementById('annualTableBody');
+            const totalCount = document.getElementById('annualTotalCount');
+            
+            tableBody.innerHTML = '';
+            
+            const resultsArray = Array.from(resultsMap.entries()).map(([key, totalMinutes]) => {
+                const [name, jobType] = key.split('|');
+                return { name, jobType, totalMinutes };
+            });
+            
+            // 이름순 정렬
+            resultsArray.sort((a, b) => a.name.localeCompare(b.name));
+            
+            resultsArray.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.style.borderBottom = '1px solid var(--google-gray-200)';
+                if (index % 2 === 0) {
+                    row.style.background = 'var(--google-gray-50)';
+                }
+                
+                // 분을 일/시간/분으로 변환
+                let totalMin = item.totalMinutes;
+                let outDay, outHour, outMin;
+                
+                if (item.jobType === '초등돌봄전담사' || item.jobType === '환경실무원') {
+                    // 5시간(300분) 기준
+                    outDay = Math.floor(totalMin / 300);
+                    totalMin = totalMin % 300;
+                    outHour = Math.floor(totalMin / 60);
+                    outMin = totalMin % 60;
+                } else {
+                    // 8시간(480분) 기준
+                    outDay = Math.floor(totalMin / 480);
+                    totalMin = totalMin % 480;
+                    outHour = Math.floor(totalMin / 60);
+                    outMin = totalMin % 60;
+                }
+                
+                const timeText = `${outDay}일 ${outHour}시간 ${outMin}분`;
+                
+                row.innerHTML = `
+                    <td style="padding: 12px; color: var(--google-gray-900);">${item.name}</td>
+                    <td style="padding: 12px; color: var(--google-gray-700);">${item.jobType}</td>
+                    <td style="padding: 12px; text-align: right; color: var(--google-blue); font-weight: 500;">${timeText}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            totalCount.textContent = resultsArray.length;
+            resultCard.style.display = 'block';
+            
+            alert(`✅ 처리 완료!\n처리 시간: ${processingTime}초\n처리 건수: ${resultsArray.length}건`);
+        }
+
+        function resetAnnualCalculator() {
+            // 파일 입력 초기화
+            document.getElementById('annualFile').value = '';
+            
+            // 결과 카드 숨기기
+            document.getElementById('annualResultCard').style.display = 'none';
+            
+            // 처리 중 메시지 숨기기
+            document.getElementById('annualProcessing').style.display = 'none';
+            
+            // 테이블 내용 초기화
+            document.getElementById('annualTableBody').innerHTML = '';
+            
+            // 오류 메시지 초기화
+            document.getElementById('annualErrors').style.display = 'none';
+            document.getElementById('annualErrorList').innerHTML = '';
+            
+            // 카운트 초기화
+            document.getElementById('annualTotalCount').textContent = '0';
+            
+            alert('초기화되었습니다.');
+        }
+
+// ======================== 공무직 보수 계산기 JS ========================
+
+// 직종별 기본값 데이터
+const jobData = {
+    '영양사':          {basic:2266000,meal:150000,risk:50000,license:113300,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '전문상담사':       {basic:2266000,meal:150000,risk:0,license:0,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '운동부지도자':     {basic:2266000,meal:150000,risk:0,license:0,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '임상심리사':       {basic:2266000,meal:150000,risk:0,license:0,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '교무행정실무원':   {basic:2066000,meal:150000,risk:0,license:0,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '교무행정사':       {basic:2066000,meal:150000,risk:0,license:0,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '과학실험실무원':   {basic:2066000,meal:150000,risk:0,license:0,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '전산실무원':       {basic:2066000,meal:150000,risk:0,license:103300,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '특수실무원':       {basic:2066000,meal:150000,risk:0,license:0,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '조리사':           {basic:2066000,meal:150000,risk:50000,license:103300,hygiene:50000,spec1:0,spec2:50000,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '조리실무사':       {basic:2066000,meal:150000,risk:50000,license:0,hygiene:50000,spec1:0,spec2:50000,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '행정실무원(월급제)':{basic:2066000,meal:150000,risk:0,license:0,hygiene:0,spec1:50000,spec2:0,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '시설관리원':       {basic:2066000,meal:150000,risk:0,license:0,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '초등돌봄전담사':   {basic:1291250,meal:150000,risk:0,license:0,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:1850000,bonus:1000000,hours:130},
+    '환경실무원':       {basic:1291250,meal:150000,risk:0,license:0,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:1850000,bonus:500000,hours:130},
+    '초등스포츠강사':   {basic:2266000,meal:150000,risk:0,license:0,hygiene:0,spec1:0,spec2:0,train:50000,travel:80000,holiday:1850000,bonus:1000000,hours:209},
+    '영어회화전문강사': {basic:2506000,meal:150000,risk:0,license:0,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '교육복지사':       {basic:2266000,meal:150000,risk:0,license:0,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:1850000,bonus:1000000,hours:209},
+    '유치원(4시간)':    {basic:1681250,meal:140000,risk:0,license:0,hygiene:0,spec1:0,spec2:0,train:0,travel:0,holiday:0,bonus:0,hours:0},
+};
+
+// 페이지 전환
+function showBosuCalculator() {
+    document.getElementById('mainPage').classList.remove('active');
+    document.getElementById('calculatorPage').classList.remove('active');
+    document.getElementById('vacationCalculatorPage').classList.remove('active');
+    document.getElementById('bosuCalculatorPage').classList.add('active');
+    window.scrollTo(0,0);
+    renderShinTable();
+    renderTongSaved();
+}
+
+function showBosuTab(index) {
+    document.querySelectorAll('.bosu-tab-btn').forEach((btn,i) => btn.classList.toggle('active', i===index));
+    document.querySelectorAll('.bosu-tab-content').forEach((c,i) => c.classList.toggle('active', i===index));
+    if(index===1) renderTongSaved();
+    if(index===4) renderPayTable();
+}
+
+// ① 신분변동일 - 인메모리 스토리지
+window._bosu_shin = window._bosu_shin || [];
+function getShinData() { return window._bosu_shin; }
+function setShinData(d) { window._bosu_shin = d; }
+
+function calcAge(birthStr) {
+    if(!birthStr) return '-';
+    const today = new Date();
+    const birth = new Date(birthStr);
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if(m<0 || (m===0 && today.getDate()<birth.getDate())) age--;
+    return age >= 65 ? '만65세이상' : '만65세미만';
+}
+
+function renderShinTable() {
+    const data = getShinData();
+    const tbody = document.getElementById('shinTableBody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    data.forEach((r,i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${i+1}</td><td>${r.name}</td><td>${r.school}</td><td>${r.neis}</td>
+            <td>${r.birth}</td><td>${calcAge(r.birth)}</td><td>${r.job}</td>
+            <td>${r.type}</td><td>${r.work}</td><td>${r.status}</td>
+            <td>${r.contract}</td><td>${r.detail}</td>
+            <td><button class="small-btn btn-delete" onclick="deleteShin(${i})">삭제</button></td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+function addShinEmployee() {
+    const name = document.getElementById('shin_name').value.trim();
+    if(!name) { alert('성명을 입력하세요.'); return; }
+    const data = getShinData();
+    data.push({
+        name, school: document.getElementById('shin_school').value,
+        neis: document.getElementById('shin_neis').value,
+        birth: document.getElementById('shin_birth').value,
+        job: document.getElementById('shin_job').value,
+        type: document.getElementById('shin_type').value,
+        work: document.getElementById('shin_work').value,
+        status: document.getElementById('shin_status').value,
+        contract: document.getElementById('shin_contract').value,
+        detail: document.getElementById('shin_detail').value
+    });
+    setShinData(data);
+    renderShinTable();
+    ['shin_name','shin_school','shin_neis','shin_neis','shin_detail'].forEach(id => document.getElementById(id).value='');
+}
+
+function deleteShin(i) {
+    const data = getShinData();
+    data.splice(i,1);
+    setShinData(data);
+    renderShinTable();
+}
+
+// ② 통상임금 계산기
+function autoFillTongJob() {
+    const job = document.getElementById('tong_job').value;
+    const d = jobData[job];
+    if(!d) return;
+    const years = parseInt(document.getElementById('tong_years').value)||0;
+    document.getElementById('tong_basic').value = d.basic;
+    document.getElementById('tong_meal').value = d.meal;
+    document.getElementById('tong_tenure').value = years > 0 ? years * 40000 : 0;
+    document.getElementById('tong_risk').value = d.risk;
+    document.getElementById('tong_license').value = d.license;
+    document.getElementById('tong_hygiene').value = d.hygiene;
+    document.getElementById('tong_special1').value = d.spec1;
+    document.getElementById('tong_special2').value = d.spec2;
+    document.getElementById('tong_training').value = d.train;
+    document.getElementById('tong_travel').value = d.travel;
+    document.getElementById('tong_holiday').value = d.holiday;
+    document.getElementById('tong_bonus').value = d.bonus;
+    document.getElementById('tong_hours').value = d.hours;
+    calcTongImgeum();
+}
+
+function calcTongImgeum() {
+    const get = id => parseFloat(document.getElementById(id).value)||0;
+    const basic = get('tong_basic'), meal = get('tong_meal'), tenure = get('tong_tenure');
+    const risk = get('tong_risk'), license = get('tong_license'), hygiene = get('tong_hygiene');
+    const spec1 = get('tong_special1'), spec2 = get('tong_special2');
+    const train = get('tong_training'), travel = get('tong_travel');
+    const holiday = get('tong_holiday'), bonus = get('tong_bonus');
+    const hours = get('tong_hours');
+    const bonusYn = document.getElementById('tong_bonus_yn').value === 'yes';
+    if(hours <= 0) return;
+    const monthly = basic + meal + tenure + risk + license + hygiene + spec1 + spec2 + train + travel
+        + (bonusYn ? holiday/12 : 0) + (bonusYn ? bonus/12 : 0);
+    const hourly = Math.floor(monthly / hours);
+    const resultEl = document.getElementById('tongResult');
+    document.getElementById('tongHourlyRate').textContent = hourly.toLocaleString() + '원';
+    document.getElementById('tongDetail').innerHTML = `
+        <div class="result-detail-item"><span class="result-detail-label">월 통상임금 합산액</span><span class="result-detail-value">${Math.floor(monthly).toLocaleString()}원</span></div>
+        <div class="result-detail-item"><span class="result-detail-label">월소정근로시간</span><span class="result-detail-value">${hours}시간</span></div>
+        <div class="result-detail-item"><span class="result-detail-label" style="color:var(--google-blue);font-weight:600;">통상시급</span><span class="result-detail-value" style="color:var(--google-blue);font-weight:600;">${hourly.toLocaleString()}원</span></div>
+        <div style="margin-top:12px;">
+            <button class="btn-auto-fill" onclick="saveTongRate()">이 결과 저장</button>
+        </div>`;
+    resultEl.style.display = 'block';
+    window._lastTongResult = { job: document.getElementById('tong_job').value, name: document.getElementById('tong_name').value, basic, monthly: Math.floor(monthly), hourly };
+}
+
+window._bosu_tong = window._bosu_tong || [];
+function getTongSaved() { return window._bosu_tong; }
+function setTongSaved(d) { window._bosu_tong = d; }
+
+function saveTongRate() {
+    if(!window._lastTongResult) { alert('먼저 계산하세요.'); return; }
+    const data = getTongSaved();
+    const r = window._lastTongResult;
+    const idx = data.findIndex(d => d.name === r.name);
+    if(idx >= 0) data[idx] = r; else data.push(r);
+    setTongSaved(data);
+    renderTongSaved();
+    alert('저장되었습니다.');
+}
+
+function renderTongSaved() {
+    const data = getTongSaved();
+    const tbody = document.getElementById('tongSavedBody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    data.forEach((r,i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${r.job||'-'}</td><td>${r.name||'-'}</td><td>${(r.basic||0).toLocaleString()}</td>
+            <td>${(r.monthly||0).toLocaleString()}</td><td style="color:var(--google-blue);font-weight:600;">${(r.hourly||0).toLocaleString()}원</td>
+            <td><button class="small-btn btn-auto-fill" onclick="editTong(${i})">수정</button></td>
+            <td><button class="small-btn btn-delete" onclick="deleteTong(${i})">삭제</button></td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+function editTong(i) {
+    const d = getTongSaved()[i];
+    if(!d) return;
+    document.getElementById('tong_name').value = d.name||'';
+    document.getElementById('tong_job').value = d.job||'';
+    alert(d.name + '의 데이터를 불러왔습니다. 수정 후 다시 저장하세요.');
+}
+
+function deleteTong(i) {
+    const data = getTongSaved();
+    data.splice(i,1);
+    setTongSaved(data);
+    renderTongSaved();
+}
+
+function loadTongRate(nameId, rateId) {
+    const name = document.getElementById(nameId).value.trim();
+    const data = getTongSaved();
+    const found = data.find(d => d.name === name || d.name.includes(name));
+    if(found) {
+        document.getElementById(rateId).value = found.hourly;
+        alert(found.name + '의 통상시급 ' + found.hourly.toLocaleString() + '원이 입력되었습니다.');
+    } else {
+        alert('저장된 통상시급을 찾을 수 없습니다. 탭②에서 먼저 저장해주세요.');
+    }
+}
+
+// ③ 초과근무 일별집계
+function addDailyRow() {
+    const tbody = document.getElementById('dailyOTBody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input type="date" style="width:130px;"></td>
+        <td><input type="number" value="0" style="width:60px;" oninput="calcDailyOT()"></td>
+        <td><input type="number" value="0" style="width:50px;" oninput="calcDailyOT()"></td>
+        <td><input type="number" value="0" style="width:60px;" oninput="calcDailyOT()"></td>
+        <td><input type="number" value="0" style="width:50px;" oninput="calcDailyOT()"></td>
+        <td><input type="number" value="0" style="width:60px;" oninput="calcDailyOT()"></td>
+        <td><input type="number" value="0" style="width:50px;" oninput="calcDailyOT()"></td>
+        <td class="row-subtotal" style="text-align:right;font-weight:500;color:var(--google-blue);">0원</td>
+        <td><button class="small-btn btn-delete" onclick="this.closest('tr').remove();calcDailyOT()">삭제</button></td>`;
+    tbody.appendChild(tr);
+}
+
+function calcDailyOT() {
+    const rate = parseFloat(document.getElementById('daily_rate').value)||0;
+    const rows = document.getElementById('dailyOTBody').querySelectorAll('tr');
+    let total100=0, total150=0, totalNight=0, grandTotal=0;
+    rows.forEach(tr => {
+        const inputs = tr.querySelectorAll('input[type=number]');
+        const h100 = parseFloat(inputs[0].value)||0, m100 = parseFloat(inputs[1].value)||0;
+        const h150 = parseFloat(inputs[2].value)||0, m150 = parseFloat(inputs[3].value)||0;
+        const hn  = parseFloat(inputs[4].value)||0,  mn  = parseFloat(inputs[5].value)||0;
+        const sub = Math.floor(rate*(h100+m100/60)*1.0 + rate*(h150+m150/60)*1.5 + rate*(hn+mn/60)*0.5);
+        tr.querySelector('.row-subtotal').textContent = sub.toLocaleString()+'원';
+        total100 += (h100+m100/60); total150 += (h150+m150/60); totalNight += (hn+mn/60);
+        grandTotal += sub;
+    });
+    const resultEl = document.getElementById('dailyOTResult');
+    document.getElementById('dailyOTTotal').textContent = grandTotal.toLocaleString()+'원';
+    document.getElementById('dailyOTDetail').innerHTML = `
+        <div class="result-detail-item"><span class="result-detail-label">연장100% 합계</span><span class="result-detail-value">${total100.toFixed(2)}시간 × ${rate.toLocaleString()}원 = ${Math.floor(rate*total100).toLocaleString()}원</span></div>
+        <div class="result-detail-item"><span class="result-detail-label">연장150% 합계</span><span class="result-detail-value">${total150.toFixed(2)}시간 × ${rate.toLocaleString()}원 × 1.5 = ${Math.floor(rate*total150*1.5).toLocaleString()}원</span></div>
+        <div class="result-detail-item"><span class="result-detail-label">야간50% 합계</span><span class="result-detail-value">${totalNight.toFixed(2)}시간 × ${rate.toLocaleString()}원 × 0.5 = ${Math.floor(rate*totalNight*0.5).toLocaleString()}원</span></div>`;
+    resultEl.style.display = 'block';
+}
+
+// ④ 초과근무 월별집계
+function addMonthlyRow(name, rate) {
+    const tbody = document.getElementById('monthlyOTBody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input type="text" value="${name||''}" style="width:90px;"></td>
+        <td><input type="number" value="${rate||0}" style="width:80px;" oninput="calcMonthlyOT()"></td>
+        <td><input type="number" value="0" style="width:55px;" oninput="calcMonthlyOT()"></td>
+        <td><input type="number" value="0" style="width:45px;" oninput="calcMonthlyOT()"></td>
+        <td><input type="number" value="0" style="width:55px;" oninput="calcMonthlyOT()"></td>
+        <td><input type="number" value="0" style="width:45px;" oninput="calcMonthlyOT()"></td>
+        <td><input type="number" value="0" style="width:55px;" oninput="calcMonthlyOT()"></td>
+        <td><input type="number" value="0" style="width:45px;" oninput="calcMonthlyOT()"></td>
+        <td class="row-monthly-sub" style="text-align:right;font-weight:500;color:var(--google-blue);">0원</td>
+        <td><button class="small-btn btn-delete" onclick="this.closest('tr').remove();calcMonthlyOT()">삭제</button></td>`;
+    tbody.appendChild(tr);
+}
+
+function loadAllTongRates() {
+    const data = getTongSaved();
+    if(data.length === 0) { alert('저장된 통상시급이 없습니다. 탭②에서 먼저 저장해주세요.'); return; }
+    document.getElementById('monthlyOTBody').innerHTML = '';
+    data.forEach(d => addMonthlyRow(d.name, d.hourly));
+    calcMonthlyOT();
+}
+
+function calcMonthlyOT() {
+    const rows = document.getElementById('monthlyOTBody').querySelectorAll('tr');
+    let grandTotal = 0;
+    let detail = '';
+    rows.forEach(tr => {
+        const inputs = tr.querySelectorAll('input');
+        const name = inputs[0].value;
+        const rate = parseFloat(inputs[1].value)||0;
+        const h100 = parseFloat(inputs[2].value)||0, m100 = parseFloat(inputs[3].value)||0;
+        const h150 = parseFloat(inputs[4].value)||0, m150 = parseFloat(inputs[5].value)||0;
+        const hn  = parseFloat(inputs[6].value)||0,  mn  = parseFloat(inputs[7].value)||0;
+        const sub = Math.floor(rate*(h100+m100/60)*1.0 + rate*(h150+m150/60)*1.5 + rate*(hn+mn/60)*0.5);
+        tr.querySelector('.row-monthly-sub').textContent = sub.toLocaleString()+'원';
+        grandTotal += sub;
+        if(name) detail += `<div class="result-detail-item"><span class="result-detail-label">${name}</span><span class="result-detail-value">${sub.toLocaleString()}원</span></div>`;
+    });
+    const resultEl = document.getElementById('monthlyOTResult');
+    document.getElementById('monthlyOTTotal').textContent = grandTotal.toLocaleString()+'원';
+    document.getElementById('monthlyOTDetail').innerHTML = detail;
+    resultEl.style.display = 'block';
+}
+
+// ⑤ 급여 지급 내역
+function addPayRow() {
+    const tbody = document.getElementById('payTableBody');
+    const tr = document.createElement('tr');
+    const inp = (id,w,val) => `<input type="number" id="${id}" value="${val||0}" style="width:${w}px;" oninput="calcPayRow(this.closest('tr'))">`;
+    tr.innerHTML = `
+        <td><input type="text" style="width:70px;" placeholder="이름"></td>
+        <td><input type="date" style="width:110px;"></td>
+        <td><input type="text" style="width:80px;" placeholder="직종"></td>
+        <td>${inp('','65',0)}</td><td>${inp('','55',0)}</td><td>${inp('','55',0)}</td>
+        <td>${inp('','50',0)}</td><td>${inp('','55',0)}</td><td>${inp('','55',0)}</td>
+        <td>${inp('','55',0)}</td><td>${inp('','55',0)}</td><td>${inp('','55',0)}</td>
+        <td>${inp('','55',0)}</td><td>${inp('','55',0)}</td>
+        <td class="pr-totalpay" style="text-align:right;font-weight:600;color:var(--google-blue);">0</td>
+        <td class="pr-pension" style="text-align:right;">0</td>
+        <td class="pr-health" style="text-align:right;">0</td>
+        <td class="pr-ltc" style="text-align:right;">0</td>
+        <td class="pr-employ" style="text-align:right;">0</td>
+        <td class="pr-income" style="text-align:right;">0</td>
+        <td class="pr-local" style="text-align:right;">0</td>
+        <td class="pr-totalded" style="text-align:right;font-weight:600;color:var(--google-red);">0</td>
+        <td class="pr-net" style="text-align:right;font-weight:600;color:var(--google-blue);">0</td>
+        <td><button class="small-btn btn-delete" onclick="this.closest('tr').remove();calcPayTotals()">삭제</button></td>`;
+    tbody.appendChild(tr);
+}
+
+function calcPayRow(tr) {
+    const nums = tr.querySelectorAll('input[type=number]');
+    const v = Array.from(nums).map(n => parseFloat(n.value)||0);
+    const totalPay = v[0]+v[1]+v[2]+v[3]+v[4]+v[5]+v[6]+v[7]+v[8]+v[9]+v[10];
+    // 4대보험 기준: 기본급+근속수당+각종수당 합산을 보수월액으로 사용
+    const pension = Math.floor(totalPay*0.045);
+    const health = Math.floor(totalPay*0.03545);
+    const ltc = Math.floor(health*0.1295);
+    const employ = Math.floor(totalPay*0.009);
+    // 간이세액표 단순 적용
+    let incomeTax = 0;
+    if(totalPay > 3000000) incomeTax = Math.floor(totalPay*0.06);
+    else if(totalPay > 1500000) incomeTax = Math.floor((totalPay-1500000)*0.06);
+    const localTax = Math.floor(incomeTax*0.1);
+    const totalDed = pension+health+ltc+employ+incomeTax+localTax;
+    const net = totalPay-totalDed;
+    tr.querySelector('.pr-totalpay').textContent = totalPay.toLocaleString();
+    tr.querySelector('.pr-pension').textContent = pension.toLocaleString();
+    tr.querySelector('.pr-health').textContent = health.toLocaleString();
+    tr.querySelector('.pr-ltc').textContent = ltc.toLocaleString();
+    tr.querySelector('.pr-employ').textContent = employ.toLocaleString();
+    tr.querySelector('.pr-income').textContent = incomeTax.toLocaleString();
+    tr.querySelector('.pr-local').textContent = localTax.toLocaleString();
+    tr.querySelector('.pr-totalded').textContent = totalDed.toLocaleString();
+    tr.querySelector('.pr-net').textContent = net.toLocaleString();
+    calcPayTotals();
+}
+
+function calcPayTotals() {
+    const fields = ['pr-totalpay','pr-pension','pr-health','pr-ltc','pr-employ','pr-income','pr-local','pr-totalded','pr-net'];
+    const totIds = ['pt_total_pay','pt_pension','pt_health','pt_ltc','pt_employ','pt_income','pt_local','pt_total_ded','pt_net'];
+    const keys = ['basic','tenure','meal','family','edu','teach','regular','regular_add','overtime_fixed','overtime_extra','adjust'];
+    keys.forEach((k,i) => {
+        let sum = 0;
+        document.querySelectorAll('#payTableBody tr').forEach(tr => {
+            const inputs = tr.querySelectorAll('input[type=number]');
+            if(inputs[i]) sum += parseFloat(inputs[i].value)||0;
+        });
+        const el = document.getElementById('pt_'+k);
+        if(el) el.textContent = sum.toLocaleString();
+    });
+    fields.forEach((cls,i) => {
+        let sum = 0;
+        document.querySelectorAll('#payTableBody tr .'+cls).forEach(td => {
+            sum += parseInt(td.textContent.replace(/,/g,''))||0;
+        });
+        const el = document.getElementById(totIds[i]);
+        if(el) el.textContent = sum.toLocaleString();
+    });
+}
+
+function renderPayTable() { calcPayTotals(); }
+
+// ⑥ 임금명세서(교육공무직)
+function autoFillMs1Job() {
+    const job = document.getElementById('ms1_job').value;
+    const d = jobData[job];
+    if(!d) return;
+    calcMs1();
+}
+
+function calcMs1Age() {
+    const birth = document.getElementById('ms1_birth').value;
+    calcMs1();
+}
+
+function getDaysInMonth(monthStr) {
+    if(!monthStr) return 30;
+    const [y,m] = monthStr.split('-').map(Number);
+    return new Date(y, m, 0).getDate();
+}
+
+function calcMs1() {
+    const job = document.getElementById('ms1_job').value;
+    const d = jobData[job] || {};
+    const nowork = parseFloat(document.getElementById('ms1_nowork').value)||0;
+    const statusChange = parseFloat(document.getElementById('ms1_statuschange').value)||0;
+    const hourly = parseFloat(document.getElementById('ms1_hourly').value)||0;
+    const monthStr = document.getElementById('ms1_month').value;
+    const totalDays = getDaysInMonth(monthStr);
+    const years = parseFloat(document.getElementById('ms1_years').value)||0;
+    const family = parseFloat(document.getElementById('ms1_family').value)||0;
+    const annual = parseFloat(document.getElementById('ms1_annual').value)||0;
+    const adjust = parseFloat(document.getElementById('ms1_adjust').value)||0;
+
+    const extH = parseFloat(document.getElementById('ms1_ext_h').value)||0;
+    const extM = parseFloat(document.getElementById('ms1_ext_m').value)||0;
+    const lawH = parseFloat(document.getElementById('ms1_law_h').value)||0;
+    const lawM = parseFloat(document.getElementById('ms1_law_m').value)||0;
+    const holH = parseFloat(document.getElementById('ms1_hol_h').value)||0;
+    const holM = parseFloat(document.getElementById('ms1_hol_m').value)||0;
+    const holextH = parseFloat(document.getElementById('ms1_holext_h').value)||0;
+    const holextM = parseFloat(document.getElementById('ms1_holext_m').value)||0;
+    const nightH = parseFloat(document.getElementById('ms1_night_h').value)||0;
+    const nightM = parseFloat(document.getElementById('ms1_night_m').value)||0;
+
+    const pensionBase = parseFloat(document.getElementById('ms1_pension_base').value)||0;
+    const healthBase = parseFloat(document.getElementById('ms1_health_base').value)||0;
+    const employBase = parseFloat(document.getElementById('ms1_employ_base').value)||0;
+    const taxRate = parseFloat(document.getElementById('ms1_tax_rate').value)||0.8;
+
+    const basic = d.basic || 0;
+    const meal = d.meal || 0;
+    const tenure = years > 0 ? years * 40000 : 0;
+
+    const f = (days,noworkDays,statusDays) => totalDays > 0 ? (totalDays - noworkDays - statusDays) / totalDays : 1;
+    const fStatus = totalDays > 0 ? (totalDays - statusChange) / totalDays : 1;
+
+    const basicPay = Math.floor(basic * f(totalDays, nowork, statusChange));
+    const mealPay = Math.floor(meal * f(totalDays, nowork, statusChange));
+    const tenurePay = Math.floor(tenure * fStatus);
+    const familyPay = Math.floor(family * fStatus);
+    const lawOT = Math.floor(hourly * (lawH + lawM/60) * 1.0);
+    const extOT = Math.floor(hourly * (extH + extM/60) * 1.5);
+    const holOT = Math.floor(hourly * (holH + holM/60) * 1.5);
+    const holExtOT = Math.floor(hourly * (holextH + holextM/60) * 2.0);
+    const nightOT = Math.floor(hourly * (nightH + nightM/60) * 0.5);
+    const annualPay = annual;
+    const adjustPay = adjust;
+
+    const totalPay = basicPay+mealPay+tenurePay+familyPay+lawOT+extOT+holOT+holExtOT+nightOT+annualPay+adjustPay;
+
+    const pension = Math.floor(pensionBase * 0.045);
+    const health = Math.floor(healthBase * 0.03545);
+    const ltc = Math.floor(health * 0.1295);
+    const employ = Math.floor(employBase * 0.009);
+    // 소득세(간이세액표 단순적용)
+    let incomeTax = 0;
+    if(totalPay > 3000000) incomeTax = Math.floor(totalPay*0.06*taxRate);
+    else if(totalPay > 1500000) incomeTax = Math.floor((totalPay-1500000)*0.06*taxRate);
+    const localTax = Math.floor(incomeTax*0.1);
+    const totalDed = pension+health+ltc+employ+incomeTax+localTax;
+    const netPay = totalPay - totalDed;
+
+    const rows = [
+        ['기본급', basic+'원', basicPay],
+        ['정액급식비', meal+'원', mealPay],
+        ['근속수당', tenure+'원', tenurePay],
+        ['가족수당', family+'원', familyPay],
+        ['법내연장근로수당', `${hourly}×${lawH}시${lawM}분×100%`, lawOT],
+        ['연장근로수당', `${hourly}×${extH}시${extM}분×150%`, extOT],
+        ['휴일근로수당', `${hourly}×${holH}시${holM}분×150%`, holOT],
+        ['휴일연장근로수당', `${hourly}×${holextH}시${holextM}분×200%`, holExtOT],
+        ['야간근로수당', `${hourly}×${nightH}시${nightM}분×50%`, nightOT],
+        ['연차미사용수당', '직접입력', annualPay],
+        ['조정수당', '직접입력', adjustPay],
+    ];
+    const dedRows = [
+        ['소득세', incomeTax], ['지방소득세', localTax], ['국민연금', pension],
+        ['건강보험', health], ['장기요양보험', ltc], ['고용보험', employ],
+    ];
+
+    let payHtml = '<table class="bosu-table"><thead><tr><th>항목</th><th>기준</th><th style="text-align:right;">금액(원)</th></tr></thead><tbody>';
+    rows.forEach(([name,calc,amt]) => {
+        if(amt !== 0 || name === '기본급' || name === '정액급식비')
+            payHtml += `<tr><td>${name}</td><td style="font-size:12px;color:var(--google-gray-700);">${calc}</td><td style="text-align:right;">${amt.toLocaleString()}</td></tr>`;
+    });
+    payHtml += '</tbody></table>';
+    payHtml += '<table class="bosu-table" style="margin-top:12px;"><thead><tr><th>공제항목</th><th style="text-align:right;">금액(원)</th></tr></thead><tbody>';
+    dedRows.forEach(([name,amt]) => { payHtml += `<tr><td>${name}</td><td style="text-align:right;color:var(--google-red);">${amt.toLocaleString()}</td></tr>`; });
+    payHtml += '</tbody></table>';
+
+    document.getElementById('ms1PayRows').innerHTML = payHtml;
+    document.getElementById('ms1TotalPay').textContent = totalPay.toLocaleString()+'원';
+    document.getElementById('ms1TotalDed').textContent = totalDed.toLocaleString()+'원';
+    document.getElementById('ms1NetPay').textContent = netPay.toLocaleString()+'원';
+    document.getElementById('ms1Result').style.display = 'block';
+}
+
+// ⑦ 임금명세서(유치원)
+function calcMs2() {
+    const nowork = parseFloat(document.getElementById('ms2_nowork').value)||0;
+    const statusChange = parseFloat(document.getElementById('ms2_statuschange').value)||0;
+    const basic = parseFloat(document.getElementById('ms2_basic').value)||0;
+    const meal = parseFloat(document.getElementById('ms2_meal').value)||0;
+    const research = parseFloat(document.getElementById('ms2_research').value)||0;
+    const teach = parseFloat(document.getElementById('ms2_teach').value)||0;
+    const regular = parseFloat(document.getElementById('ms2_regular').value)||0;
+    const regularAdd = parseFloat(document.getElementById('ms2_regular_add').value)||0;
+    const otFixed = parseFloat(document.getElementById('ms2_ot_fixed').value)||0;
+    const otExtra = parseFloat(document.getElementById('ms2_ot_extra').value)||0;
+
+    const monthStr = document.getElementById('ms2_month').value;
+    const totalDays = getDaysInMonth(monthStr);
+    const f = totalDays > 0 ? (totalDays - nowork - statusChange) / totalDays : 1;
+
+    const basicPay = Math.floor(basic * f);
+    const mealPay = Math.floor(meal * f);
+    const totalPay = basicPay + mealPay + research + teach + regular + regularAdd + otFixed + otExtra;
+
+    const pensionBase = parseFloat(document.getElementById('ms2_pension_base').value)||0;
+    const healthBase = parseFloat(document.getElementById('ms2_health_base').value)||0;
+    const employBase = parseFloat(document.getElementById('ms2_employ_base').value)||0;
+    const incomeTax = parseFloat(document.getElementById('ms2_incometax').value)||0;
+
+    const pension = Math.floor(pensionBase * 0.045);
+    const health = Math.floor(healthBase * 0.03545);
+    const ltc = Math.floor(health * 0.1295);
+    const employ = Math.floor(employBase * 0.009);
+    const localTax = Math.floor(incomeTax * 0.1);
+    const totalDed = pension + health + ltc + employ + incomeTax + localTax;
+    const netPay = totalPay - totalDed;
+
+    const rows = [
+        ['기본급', basicPay], ['급식비', mealPay], ['교원연구비', research],
+        ['교직수당', teach], ['정근수당', regular], ['정근수당 가산금', regularAdd],
+        ['시간외근무수당(정액)', otFixed], ['시간외근무수당(초과)', otExtra],
+    ];
+    const dedRows = [
+        ['국민연금', pension], ['건강보험', health], ['장기요양', ltc],
+        ['고용보험', employ], ['소득세', incomeTax], ['지방소득세', localTax],
+    ];
+
+    let payHtml = '<table class="bosu-table"><thead><tr><th>항목</th><th style="text-align:right;">금액(원)</th></tr></thead><tbody>';
+    rows.forEach(([name,amt]) => { payHtml += `<tr><td>${name}</td><td style="text-align:right;">${amt.toLocaleString()}</td></tr>`; });
+    payHtml += '</tbody></table>';
+    payHtml += '<table class="bosu-table" style="margin-top:12px;"><thead><tr><th>공제항목</th><th style="text-align:right;">금액(원)</th></tr></thead><tbody>';
+    dedRows.forEach(([name,amt]) => { payHtml += `<tr><td>${name}</td><td style="text-align:right;color:var(--google-red);">${amt.toLocaleString()}</td></tr>`; });
+    payHtml += '</tbody></table>';
+
+    document.getElementById('ms2PayRows').innerHTML = payHtml;
+    document.getElementById('ms2TotalPay').textContent = totalPay.toLocaleString()+'원';
+    document.getElementById('ms2TotalDed').textContent = totalDed.toLocaleString()+'원';
+    document.getElementById('ms2NetPay').textContent = netPay.toLocaleString()+'원';
+    document.getElementById('ms2Result').style.display = 'block';
+}
+
+// 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    // 현재 월 기본값 설정
+    const now = new Date();
+    const ym = now.toISOString().slice(0,7);
+    ['daily_month','monthly_month','pay_month','ms1_month','ms2_month'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = ym;
+    });
+    // 일별집계 기본 1행 추가
+    if(document.getElementById('dailyOTBody') && document.getElementById('dailyOTBody').children.length === 0) addDailyRow();
+    if(document.getElementById('monthlyOTBody') && document.getElementById('monthlyOTBody').children.length === 0) addMonthlyRow();
+    if(document.getElementById('payTableBody') && document.getElementById('payTableBody').children.length === 0) addPayRow();
+});
+
+    </script>
+</body>
+</html>
